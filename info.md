@@ -9,7 +9,7 @@
 [![Discord][discord-shield]][discord]
 [![Community Forum][forum-shield]][forum]
 
-_Component to integrate with [blueprint][blueprint]._
+_Component to integrate with [Gecko Spas][blueprint]._
 
 **This component will set up the following platforms.**
 
@@ -25,7 +25,7 @@ Platform | Description
 ## Installation
 
 1. Click install.
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Gecko".
 
 {% endif %}
 
@@ -36,7 +36,7 @@ Platform | Description
 
 ***
 
-[blueprint]: https://github.com/custom-components/blueprint
+[gecko]: https://github.com/gazoodle/gecko-home-assistant
 [buymecoffee]: https://www.buymeacoffee.com/ludeeus
 [buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
 [commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge

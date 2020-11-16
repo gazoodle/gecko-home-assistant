@@ -8,7 +8,11 @@
 	"postCreateCommand": "container install",
 	"runArgs": [
 		"-v",
-		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh"
+		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh",
+		"--network",
+		"mynet",
+		"--mount",
+		"type=bind,source=/home/gary/Source/geckolib/src/geckolib,target=/usr/lib/python3.8/site-packages/geckolib,readonly"
 	],
 	"extensions": [
 		"ms-python.python",

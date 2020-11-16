@@ -1,13 +1,12 @@
 {
     "config": {
-        "title": "Blueprint",
+        "title": "Gecko",
         "step": {
             "user": {
-                "title": "Blueprint",
-                "description": "If you need help with the configuration have a look here: https://github.com/custom-components/blueprint",
+                "title": "Pick a spa to connect to",
+                "description": "",
                 "data": {
-                    "username": "Username",
-                    "password": "Password"
+                    "spalist": "Select your spa"
                 }
             }
         },
@@ -15,15 +14,18 @@
             "auth": "Username/Password is wrong."
         },
         "abort": {
-            "single_instance_allowed": "Only a single configuration of Blueprint is allowed."
+            "no_spas": "No spas were found on your network. Please ensure you're on the same LAN as the in.touch2 module and check the results against the iOS or Android apps.",
+            "single_instance_allowed": "Only a single configuration of Gecko is allowed."
         }
     },
     "options": {
         "step": {
             "user": {
                 "data": {
+                    "climate": "Climate enabled",
                     "binary_sensor": "Binary sensor enabled",
                     "sensor": "Sensor enabled",
+                    "light": "Light enabled",
                     "switch": "Switch enabled"
                 }
             }

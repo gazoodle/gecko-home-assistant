@@ -1,0 +1,13 @@
+{
+  "domain": "gecko",
+  "name": "Gecko",
+  "documentation": "https://github.com/gazoodle/gecko-home-assistant",
+  "dependencies": [],
+  "config_flow": true,
+  "codeowners": [
+    "@gazoodle"
+  ],
+  "requirements": [
+    "urllib3"
+  ]
+}

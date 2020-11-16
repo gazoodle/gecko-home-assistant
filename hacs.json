@@ -1,11 +1,13 @@
 {
-    "name": "Blueprint",
+    "name": "Gecko",
     "hacs": "0.24.0",
     "domains": [
         "binary_sensor",
         "sensor",
-        "switch"
+        "switch",
+        "climate",
+        "light"
     ],
-    "iot_class": "Cloud Polling",
+    "iot_class": "Local Push",
     "homeassistant": "0.115.0"
 }
