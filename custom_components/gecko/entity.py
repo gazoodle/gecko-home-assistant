@@ -11,7 +11,6 @@ _LOGGER = logging.getLogger(__name__)
 class GeckoEntity(Entity):
     def __init__(self, config_entry, automation_entity):
         self.config_entry = config_entry
-        # self._device = config_entry.data[CONF_NAME]
         self._automation_entity = automation_entity
         self._automation_entity.watch(self._on_change)
         _LOGGER.info(
@@ -32,8 +31,8 @@ class GeckoEntity(Entity):
     def device_info(self):
         return {
             "identifiers": {(DOMAIN, self._automation_entity.facade.unique_id)},
-            "name": NAME,
-            "model": VERSION,
+            "name": self._automation_entity.facade.name,
+            "model": f"{self._automation_entity.facade.spa.pack} {self._automation_entity.facade.spa.version}",
             "manufacturer": NAME,
         }
 
@@ -41,8 +40,8 @@ class GeckoEntity(Entity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return {
-            "time": "**TIME**",  # str(self.coordinator.data.get("time")),
-            "static": "**STATIC**",  # self.coordinator.data.get("static"),
+            # "time": "**TIME**",  # str(self.coordinator.data.get("time")),
+            # "static": "**STATIC**",  # self.coordinator.data.get("static"),
         }
 
     @property

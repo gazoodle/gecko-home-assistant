@@ -1,7 +1,7 @@
 """Switch platform for Gecko."""
 from homeassistant.components.light import LightEntity
 
-from .const import DOMAIN, ICON
+from .const import DOMAIN
 from .entity import GeckoEntity
 
 
@@ -27,11 +27,11 @@ class GeckoLight(GeckoEntity, LightEntity):
         self._automation_entity.turn_off()
 
     @property
-    def aicon(self):
-        """Return the icon of this switch."""
-        return ICON
+    def icon(self):
+        """Return the icon of this light."""
+        return "mdi:lightbulb"
 
     @property
     def is_on(self):
-        """Return true if the switch is on."""
+        """Return true if the light is on."""
         return self._automation_entity.is_on

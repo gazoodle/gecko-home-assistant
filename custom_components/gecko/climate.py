@@ -41,9 +41,9 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         return features
 
     @property
-    def aicon(self):
+    def icon(self):
         """Return the icon of the sensor."""
-        return ICON
+        return "mdi:hot-tub"
 
     @property
     def hvac_modes(self):

@@ -3,6 +3,7 @@ from homeassistant.components.switch import SwitchEntity
 
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity
+from geckolib import GeckoPump, GeckoBlower
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -29,9 +30,13 @@ class GeckoBinarySwitch(GeckoEntity, SwitchEntity):
         self._automation_entity.turn_off()
 
     @property
-    def aicon(self):
+    def icon(self):
         """Return the icon of this switch."""
-        return ICON
+        if isinstance(self._automation_entity, GeckoPump):
+            return "mdi:pump"
+        elif isinstance(self._automation_entity, GeckoBlower):
+            return "mdi:fan"
+        return "mdi:toggle-switch"
 
     @property
     def is_on(self):
