@@ -70,6 +70,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
 
     @property
     def preset_mode(self):
+        if self._water_care.mode is None:
+            return "Waiting..."
         return self._water_care.modes[self._water_care.mode]
 
     def set_preset_mode(self, preset_mode):
