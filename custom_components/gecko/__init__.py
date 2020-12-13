@@ -7,6 +7,7 @@ https://github.com/gazoodle/gecko-home-assistant
 import asyncio
 from datetime import timedelta
 import logging
+import asyncio
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
@@ -38,13 +39,21 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         _LOGGER.info(STARTUP_MESSAGE)
 
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
+    _LOGGER.info("Setup entry for %s", spa_identifier)
 
-    with GeckoLocator(GECKOLIB_MANAGER_UUID) as locator:
-        datablock = GeckoDataBlock(
-            locator.get_spa_from_identifier(spa_identifier).get_facade(), entry
-        )
-
-        hass.data[DOMAIN][entry.entry_id] = datablock
+    with GeckoLocator(GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier) as locator:
+        _LOGGER.info("Locator %s ready", locator)
+        try:
+            facade = locator.get_spa_from_identifier(spa_identifier).get_facade(False)
+            _LOGGER.info("Waiting for facade to be ready")
+            while not facade.is_connected:
+                await asyncio.sleep(0.1)
+            _LOGGER.info("Facade is ready")
+            datablock = GeckoDataBlock(facade, entry)
+            hass.data[DOMAIN][entry.entry_id] = datablock
+        except Exception:
+            _LOGGER.exception("Exception during entry setup")
+            return False
 
         for platform in datablock.platforms:
             hass.async_add_job(
@@ -75,8 +84,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
         )
     )
     if unloaded:
+        _LOGGER.debug("Finalize facade %r", datablock.facade)
+        datablock.facade.complete()
         hass.data[DOMAIN].pop(entry.entry_id)
-
     return unloaded
 
 

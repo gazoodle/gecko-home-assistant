@@ -3,6 +3,7 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 
 import voluptuous as vol
+import asyncio
 from geckolib import GeckoLocator
 
 from .const import (  # pylint: disable=unused-import
@@ -12,6 +13,10 @@ from .const import (  # pylint: disable=unused-import
     PLATFORMS,
     GECKOLIB_MANAGER_UUID,
 )
+
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
@@ -23,33 +28,46 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize."""
         self._errors = {}
-        with GeckoLocator(GECKOLIB_MANAGER_UUID) as locator:
-            self.spas = locator.spas
-
-    def _get_spa_identifier(self, spa_name):
-        return next(spa for spa in self.spas if spa.name == spa_name).identifier
+        self._locator = GeckoLocator(GECKOLIB_MANAGER_UUID)
+        self._locator.start_discovery()
 
     async def async_step_user(self, user_input=None):
+
+        _LOGGER.info(f"Async step user, we have {self._locator}")
+
+        # Wait for locator to have had sufficient time to find something
+        while not self._locator.has_had_enough_time:
+            await asyncio.sleep(1)
+        self._locator.complete()
 
         """Handle a flow initialized by the user."""
         self._errors = {}
 
-        if len(self.spas) == 0:
+        if len(self._locator.spas) == 0:
             # There are no spas found on your network
+            _LOGGER.warning("No spas found on the local network")
             return self.async_abort(reason="no_spas")
 
-        elif len(self.spas) == 1:
-            # There was just one spa, so go ahead and
-            config_data = {CONF_SPA_IDENTIFIER: self.spas[0].identifier}
-            return self.async_create_entry(title=self.spas[0].name, data=config_data)
+        elif len(self._locator.spas) == 1:
+            # There was just one spa, so go ahead and use that
+            spa = self._locator.spas[0]
+            _LOGGER.info("Only on spa (%r) found", spa)
+            config_data = {CONF_SPA_IDENTIFIER: spa.identifier_as_string}
+            return self.async_create_entry(title=spa.name, data=config_data)
 
         elif user_input is not None:
             # We have previously selected a spaname from the list, so now
             # connect to the identifier for that spa
+            spa_name = user_input[CONF_SPA_NAME]
+            _LOGGER.info(
+                "Previously, the user selected spa %s to configure, locate it in %r",
+                spa_name,
+                self._locator,
+            )
             config_data = {
-                CONF_SPA_IDENTIFIER: self._get_spa_identifier(
-                    user_input[CONF_SPA_NAME]
-                ),
+                CONF_SPA_IDENTIFIER: self._locator.get_spa_from_name(
+                    spa_name
+                ).identifier_as_string,
             }
             return self.async_create_entry(
                 title=user_input[CONF_SPA_NAME], data=config_data
@@ -60,7 +78,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema = {
                 vol.Required(
                     CONF_SPA_NAME,
-                ): vol.In([spa.name for spa in self.spas]),
+                ): vol.In([spa.name for spa in self._locator.spas]),
             }
 
             return self.async_show_form(
