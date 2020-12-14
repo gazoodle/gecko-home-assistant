@@ -2,7 +2,6 @@
   "domain": "gecko",
   "name": "Gecko",
   "documentation": "https://github.com/gazoodle/gecko-home-assistant",
-  "issue-tracker": "https://github.com/gazoodle/gecko-home-assistant/issues",
   "dependencies": [],
   "config_flow": true,
   "codeowners": [
