@@ -7,13 +7,17 @@
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
+_Component to integrate with [Gecko Spas][gecko-ha]._
+
 **This component will set up the following platforms.**
 
 Platform | Description
 -- | --
-`binary_sensor` | Show something `True` or `False`.
-`sensor` | Show info from blueprint API.
-`switch` | Switch something `True` or `False`.
+`binary_sensor` | Various on/off spa sensors.
+`sensor` | Text/Enum spa sensors.
+`switch` | Spa pumps, waterfalls, fans.
+`light`  | Spa lights
+`climate` | Spa water heater
 
 <!-- ![example][exampleimg]) -->
 
@@ -21,25 +25,25 @@ Platform | Description
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
-3. In the `custom_components` directory (folder) create a new folder called `blueprint`.
-4. Download _all_ the files from the `custom_components/blueprint/` directory (folder) in this repository.
+3. In the `custom_components` directory (folder) create a new folder called `gecko`.
+4. Download _all_ the files from the `custom_components/gecko/` directory (folder) in this repository.
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
-7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint"
+7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Gecko"
 
 Using your HA configuration directory (folder) as a starting point you should now also have this:
 
 ```text
-custom_components/blueprint/.translations/en.json
-custom_components/blueprint/.translations/nb.json
-custom_components/blueprint/.translations/sensor.nb.json
-custom_components/blueprint/__init__.py
-custom_components/blueprint/binary_sensor.py
-custom_components/blueprint/config_flow.py
-custom_components/blueprint/const.py
-custom_components/blueprint/manifest.json
-custom_components/blueprint/sensor.py
-custom_components/blueprint/switch.py
+custom_components/gecko/.translations/en.json
+custom_components/gecko/__init__.py
+custom_components/gecko/binary_sensor.py
+custom_components/gecko/climate.py
+custom_components/gecko/config_flow.py
+custom_components/gecko/const.py
+custom_components/gecko/light.py
+custom_components/gecko/manifest.json
+custom_components/gecko/sensor.py
+custom_components/gecko/switch.py
 ```
 
 ## Configuration is done in the UI
@@ -56,7 +60,7 @@ custom_components/blueprint/switch.py
 [exampleimg]: example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/custom-components/blueprint.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-Gazoodle%40github.com-blue.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-gazoodle%40hash.fyi-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/gazoodle/gecko-home-assistant.svg?style=for-the-badge
-[releases]: https://github.com/custom-components/blueprint/releases
+[releases]: https://github.com/gazoodle/gecko-home-assistant/releases

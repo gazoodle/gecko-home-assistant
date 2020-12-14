@@ -1,8 +1,10 @@
+# gecko-home-assistant
+
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
 
-[![hacs][hacsbadge]](hacs)
+[![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
 _Component to integrate with [Gecko Spas][gecko-ha]._
@@ -11,11 +13,13 @@ _Component to integrate with [Gecko Spas][gecko-ha]._
 
 Platform | Description
 -- | --
-`binary_sensor` | Show something `True` or `False`.
-`sensor` | Show info from blueprint API.
-`switch` | Switch something `True` or `False`.
+`binary_sensor` | Various on/off spa sensors.
+`sensor` | Text/Enum spa sensors.
+`switch` | Spa pumps, waterfalls, fans.
+`light`  | Spa lights
+`climate` | Spa water heater
 
-<!--![example][exampleimg]-->
+<!-- ![example][exampleimg]) -->
 
 {% if not installed %}
 ## Installation
@@ -25,7 +29,6 @@ Platform | Description
 
 {% endif %}
 
-
 ## Configuration is done in the UI
 
 <!---->
@@ -33,14 +36,14 @@ Platform | Description
 ***
 
 [gecko-ha]: https://github.com/gazoodle/gecko-home-assistant
-[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge
-[commits]: https://github.com/custom-components/blueprint/commits/master
+[commits-shield]: https://img.shields.io/github/commit-activity/y/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[commits]: https://github.com/gazoodle/gecko-home-assistant/commits/master
 [hacs]: https://github.com/custom-components/hacs
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [exampleimg]: example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
-[license-shield]: https://img.shields.io/github/license/custom-components/blueprint.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-Joakim%20Sørensen%20%40ludeeus-blue.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/custom-components/blueprint.svg?style=for-the-badge
-[releases]: https://github.com/custom-components/blueprint/releases
+[license-shield]: https://img.shields.io/github/license/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-gazoodle%40hash.fyi-blue.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[releases]: https://github.com/gazoodle/gecko-home-assistant/releases
