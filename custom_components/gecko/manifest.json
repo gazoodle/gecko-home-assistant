@@ -8,6 +8,6 @@
     "@gazoodle"
   ],
   "requirements": [
-    "urllib3"
+    "geckolib"
   ]
 }

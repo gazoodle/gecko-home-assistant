@@ -1,4 +1,3 @@
-// See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 	"image": "ludeeus/container:integration",
 	"context": "..",
@@ -11,8 +10,6 @@
 		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh",
 		"--network",
 		"mynet",
-		"--mount",
-		"type=bind,source=/home/gary/Source/geckolib/src/geckolib,target=/usr/lib/python3.8/site-packages/geckolib,readonly"
 	],
 	"extensions": [
 		"ms-python.python",
