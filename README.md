@@ -21,7 +21,15 @@ Platform | Description
 
 <!-- ![example][exampleimg]) -->
 
-## Installation
+## Installation (HACS)
+
+The preferred method to install is to use HACS. This repo should be available in the default list, but
+this is currently in progress, so you might need to add https://github.com/gazoodle/gecko-home-assistant
+as a custom repo. See https://hacs.xyz/docs/faq/custom_repositories for details.
+
+## Installation (No HACS)
+
+If you don't have/want HACS installed, you will need to manually install the integration
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
