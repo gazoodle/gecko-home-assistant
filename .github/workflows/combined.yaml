@@ -23,7 +23,7 @@ jobs:
       - uses: hacs/action@main
         with:
           CATEGORY: integration
-          ingore: wheels
+          ignore: wheels
       - uses: KTibow/ha-blueprint@stable
         name: CI
         with:
