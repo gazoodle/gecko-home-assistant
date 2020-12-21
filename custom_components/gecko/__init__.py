@@ -7,17 +7,15 @@ https://github.com/gazoodle/gecko-home-assistant
 import asyncio
 from datetime import timedelta
 import logging
-import asyncio
 
+from geckolib import GeckoLocator
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 
-from geckolib import GeckoLocator
-
 from .const import (
     CONF_SPA_IDENTIFIER,
-    GECKOLIB_MANAGER_UUID,
     DOMAIN,
+    GECKOLIB_MANAGER_UUID,
     PLATFORMS,
     STARTUP_MESSAGE,
 )

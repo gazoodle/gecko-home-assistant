@@ -1,20 +1,19 @@
 """Adds config flow for Gecko."""
+import asyncio
+import logging
+
+from geckolib import GeckoLocator
 from homeassistant import config_entries
 from homeassistant.core import callback
-
 import voluptuous as vol
-import asyncio
-from geckolib import GeckoLocator
 
 from .const import (  # pylint: disable=unused-import
-    CONF_SPA_NAME,
     CONF_SPA_IDENTIFIER,
+    CONF_SPA_NAME,
     DOMAIN,
-    PLATFORMS,
     GECKOLIB_MANAGER_UUID,
+    PLATFORMS,
 )
-
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -1,9 +1,9 @@
 """Switch platform for Gecko."""
+from geckolib import GeckoBlower, GeckoPump
 from homeassistant.components.switch import SwitchEntity
 
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity
-from geckolib import GeckoPump, GeckoBlower
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
