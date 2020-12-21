@@ -1,15 +1,15 @@
 """Climate platform for Gecko."""
+import logging
+
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
-    SUPPORT_TARGET_TEMPERATURE,
-    SUPPORT_PRESET_MODE,
     HVAC_MODE_AUTO,
+    SUPPORT_PRESET_MODE,
+    SUPPORT_TARGET_TEMPERATURE,
 )
 
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity
-
-import logging
 
 _LOGGER = logging.getLogger(__name__)
 
