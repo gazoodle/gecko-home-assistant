@@ -1,6 +1,7 @@
 {
   "domain": "gecko",
   "name": "Gecko",
+  "version": "1.0",
   "documentation": "https://github.com/gazoodle/gecko-home-assistant",
   "issue_tracker": "https://github.com/gazoodle/gecko-home-assistant/issues",
   "dependencies": [],
