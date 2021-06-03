@@ -1,34 +1,35 @@
 {
-    "config": {
-        "title": "Gecko",
-        "step": {
-            "user": {
-                "title": "Pick a spa to connect to",
-                "description": "",
-                "data": {
-                    "spalist": "Select your spa"
-                }
-            }
-        },
-        "error": {
-            "auth": "Username/Password is wrong."
-        },
-        "abort": {
-            "no_spas": "No spas were found on your network. Please ensure you're on the same LAN as the in.touch2 module and check the results against the iOS or Android apps.",
-            "single_instance_allowed": "Only a single configuration of Gecko is allowed."
+  "config": {
+    "title": "Gecko",
+    "step": {
+      "user": {
+        "title": "Pick a spa to connect to",
+        "description": "",
+        "data": {
+          "spalist": "Select your spa"
         }
+      }
     },
-    "options": {
-        "step": {
-            "user": {
-                "data": {
-                    "climate": "Climate enabled",
-                    "binary_sensor": "Binary sensor enabled",
-                    "sensor": "Sensor enabled",
-                    "light": "Light enabled",
-                    "switch": "Switch enabled"
-                }
-            }
-        }
+    "error": {
+      "auth": "Username/Password is wrong."
+    },
+    "abort": {
+      "no_spas": "No spas were found on your network. Please ensure you're on the same LAN as the in.touch2 module and check the results against the iOS or Android apps.",
+      "single_instance_allowed": "Only a single configuration of Gecko is allowed."
     }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "climate": "Climate enabled",
+          "binary_sensor": "Binary sensor enabled",
+          "fan": "Fan enabled",
+          "sensor": "Sensor enabled",
+          "light": "Light enabled",
+          "switch": "Switch enabled"
+        }
+      }
+    }
+  }
 }
