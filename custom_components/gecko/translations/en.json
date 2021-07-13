@@ -1,6 +1,5 @@
 {
     "config": {
-        "title": "Gecko",
         "step": {
             "user": {
                 "title": "Pick a spa to connect to",

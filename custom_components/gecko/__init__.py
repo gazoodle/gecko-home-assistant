@@ -42,7 +42,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     with GeckoLocator(GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier) as locator:
         _LOGGER.info("Locator %s ready", locator)
         try:
-            spa = await hass.async_add_executor_job(locator.get_spa_from_identifier, spa_identifier)
+            spa = await hass.async_add_executor_job(
+                locator.get_spa_from_identifier, spa_identifier
+            )
             facade = await hass.async_add_executor_job(spa.get_facade, False)
             _LOGGER.info("Waiting for facade to be ready")
             while not facade.is_connected:
