@@ -9,9 +9,7 @@ from .entity import GeckoEntity
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
     facade = hass.data[DOMAIN][entry.entry_id].facade
-    entities = [GeckoBinarySwitch(entry, pump) for pump in facade.pumps] + [
-        GeckoBinarySwitch(entry, blower) for blower in facade.blowers
-    ]
+    entities = [GeckoBinarySwitch(entry, blower) for blower in facade.blowers]
     async_add_entities(entities, True)
 
 
