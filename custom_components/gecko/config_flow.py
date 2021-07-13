@@ -50,7 +50,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         elif len(self._locator.spas) == 1:
             # There was just one spa, so go ahead and use that
             spa = self._locator.spas[0]
-            _LOGGER.info("Only on spa (%r) found", spa)
+            _LOGGER.info("Only one spa (%r) found", spa)
             config_data = {CONF_SPA_IDENTIFIER: spa.identifier_as_string}
             return self.async_create_entry(title=spa.name, data=config_data)
 
