@@ -59,7 +59,7 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
 
     @property
     def hvac_action(self):
-        """ The current HVAC action """
+        """The current HVAC action"""
         # I happen to know that the operation modes match HA's modes but
         # they are proper cased, so we just move to lower ...
         return self._automation_entity.current_operation.lower()

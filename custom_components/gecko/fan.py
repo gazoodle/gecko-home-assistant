@@ -1,9 +1,6 @@
 """Fan platform for Gecko."""
 from geckolib import GeckoPump
-from homeassistant.components.fan import FanEntity
-from homeassistant.components.fan import (
-    SUPPORT_PRESET_MODE,
-)
+from homeassistant.components.fan import SUPPORT_PRESET_MODE, FanEntity
 
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity
@@ -24,7 +21,9 @@ class GeckoFan(GeckoEntity, FanEntity):
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""
-        self._automation_entity.set_mode(next(mode for mode in self.preset_modes if mode != "OFF"))
+        self._automation_entity.set_mode(
+            next(mode for mode in self.preset_modes if mode != "OFF")
+        )
 
     async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
         """Turn off the switch."""
@@ -56,5 +55,5 @@ class GeckoFan(GeckoEntity, FanEntity):
 
         if mode != "OFF":
             return mode[0:2]
-        
+
         return mode
