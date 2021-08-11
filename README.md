@@ -15,7 +15,8 @@ Platform | Description
 -- | --
 `binary_sensor` | Various on/off spa sensors.
 `sensor` | Text/Enum spa sensors.
-`switch` | Spa pumps, waterfalls, fans.
+`switch` | Waterfalls
+`fan` | Spa pumps, fans.
 `light`  | Spa lights
 `climate` | Spa water heater
 
