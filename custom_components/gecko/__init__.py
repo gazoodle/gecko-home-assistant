@@ -13,8 +13,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 
 from .const import (
-    CONF_SPA_IDENTIFIER,
     CONF_SPA_ADDRESS,
+    CONF_SPA_IDENTIFIER,
     DOMAIN,
     GECKOLIB_MANAGER_UUID,
     PLATFORMS,
@@ -48,7 +48,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     _LOGGER.info(f"Setup entry for ID {spa_identifier}, address {spa_address}")
 
     retry_count = 1
-    with GeckoLocator(GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier, static_ip=spa_address) as locator:
+    with GeckoLocator(
+        GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier, static_ip=spa_address
+    ) as locator:
         _LOGGER.info("Locator %s ready", locator)
         try:
             spa = None

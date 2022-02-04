@@ -9,9 +9,9 @@ from homeassistant.core import callback
 import voluptuous as vol
 
 from .const import (  # pylint: disable=unused-import
+    CONF_SPA_ADDRESS,
     CONF_SPA_IDENTIFIER,
     CONF_SPA_NAME,
-    CONF_SPA_ADDRESS,
     DOMAIN,
     GECKOLIB_MANAGER_UUID,
     PLATFORMS,
@@ -62,7 +62,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             data_schema=vol.Schema(data_schema),
             errors=self._errors,
         )
-
 
     async def async_step_user(self, user_input=None):
 
@@ -126,7 +125,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_SPA_IDENTIFIER: self._locator.get_spa_from_name(
                 spa_name
             ).identifier_as_string,
-            CONF_SPA_ADDRESS: self._static_ip
+            CONF_SPA_ADDRESS: self._static_ip,
         }
         return self.async_create_entry(
             title=user_input[CONF_SPA_NAME], data=config_data
