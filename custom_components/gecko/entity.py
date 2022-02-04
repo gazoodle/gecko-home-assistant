@@ -37,7 +37,7 @@ class GeckoEntity(Entity):
         }
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes."""
         return {
             # "time": "**TIME**",  # str(self.coordinator.data.get("time")),
