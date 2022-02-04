@@ -22,7 +22,7 @@
       "not_ip": "Please enter a valid IP address, or leave the field blank to scan"
     },
     "abort": {
-      "no_spas": "No spas were found on your network. Please ensure you're on the same LAN as the in.touch2 module and check the results against the iOS or Android apps.",
+      "no_spas": "No spas were found on your network. Please ensure you're on the same LAN as the in.touch2 module and check the results against the iOS or Android apps."
     }
   },
   "options": {
