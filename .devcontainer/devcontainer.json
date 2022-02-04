@@ -1,5 +1,5 @@
 {
-	"image": "ludeeus/container:integration",
+	"image": "ghcr.io/ludeeus/devcontainer/integration:stable",
 	"context": "..",
 	"appPort": [
 		"9123:8123"
@@ -10,6 +10,8 @@
 		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh",
 		"--network",
 		"mynet",
+		"--mount",
+		"type=bind,source=/home/gary/Source/geckolib/src/geckolib,target=/usr/local/python/lib/python3.10/site-packages/geckolib,readonly"
 	],
 	"extensions": [
 		"ms-python.python",

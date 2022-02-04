@@ -6,6 +6,7 @@
         "sensor",
         "switch",
         "climate",
+        "fan",
         "light"
     ],
     "iot_class": "Local Push",

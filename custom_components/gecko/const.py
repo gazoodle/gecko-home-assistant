@@ -1,10 +1,13 @@
 """Constants for Gecko."""
+
+from geckolib import VERSION as GECKOLIB_VERSION
+
 # Base component constants
 NAME = "Gecko"
 DOMAIN = "gecko"
 DOMAIN_DATA = f"{DOMAIN}_data"
 # TODO: Find a way to DRY this const with the one in manifest.json
-VERSION = "0.0.7"
+VERSION = "0.0.8"
 
 ISSUE_URL = "https://github.com/gazoodle/gecko-home-assistant/issues"
 
@@ -28,6 +31,7 @@ PLATFORMS = [BINARY_SENSOR, FAN, SENSOR, SWITCH, CLIMATE, LIGHT]
 CONF_ENABLED = "enabled"
 CONF_SPA_NAME = "spaname"
 CONF_SPA_IDENTIFIER = "spaidentifier"
+CONF_SPA_ADDRESS = "spaipaddress"
 
 # Defaults
 DEFAULT_NAME = DOMAIN
@@ -37,6 +41,7 @@ STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------
 {NAME}
 Version: {VERSION}
+Gecko Lib: {GECKOLIB_VERSION}
 This is a custom integration!
 If you have any issues with this you need to open an issue here:
 {ISSUE_URL}

@@ -56,6 +56,12 @@ custom_components/gecko/switch.py
 
 ## Configuration is done in the UI
 
+## Revisions
+
+0.0.8 - Support for static IP
+        Watercare setting more responsive in UI
+        Supports many more tubs (geckolib 0.3.22)
+
 <!---->
 
 ***

@@ -3,6 +3,13 @@
     "title": "Gecko",
     "step": {
       "user": {
+        "title": "Gecko Setup",
+        "description": "Please provide the IP address of your SPA, or leave it blank to scan your network for available ones",
+        "data": {
+          "ipaddress": "IP Address"
+        }
+      },
+      "pick": {
         "title": "Pick a spa to connect to",
         "description": "",
         "data": {
@@ -11,11 +18,11 @@
       }
     },
     "error": {
-      "auth": "Username/Password is wrong."
+      "no_spa": "Couldn't find a spa at that address, please try again",
+      "not_ip": "Please enter a valid IP address, or leave the field blank to scan"
     },
     "abort": {
       "no_spas": "No spas were found on your network. Please ensure you're on the same LAN as the in.touch2 module and check the results against the iOS or Android apps.",
-      "single_instance_allowed": "Only a single configuration of Gecko is allowed."
     }
   },
   "options": {

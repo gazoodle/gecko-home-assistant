@@ -1,6 +1,7 @@
 """Adds config flow for Gecko."""
 import asyncio
 import logging
+import socket
 
 from geckolib import GeckoLocator
 from homeassistant import config_entries
@@ -10,6 +11,7 @@ import voluptuous as vol
 from .const import (  # pylint: disable=unused-import
     CONF_SPA_IDENTIFIER,
     CONF_SPA_NAME,
+    CONF_SPA_ADDRESS,
     DOMAIN,
     GECKOLIB_MANAGER_UUID,
     PLATFORMS,
@@ -27,64 +29,108 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     def __init__(self):
         """Initialize."""
         self._errors = {}
+        self._static_ip = None
+        _LOGGER.info("Gecko scan started")
         self._locator = GeckoLocator(GECKOLIB_MANAGER_UUID)
         self._locator.start_discovery()
 
+    def async_show_user_form(self):
+        # Let the user provide an IP address, or indicate they want us to search for one
+        data_schema = {
+            vol.Optional(
+                CONF_SPA_ADDRESS,
+            ): str,
+        }
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(data_schema),
+            errors=self._errors,
+        )
+
+    def async_show_select_form(self, locator):
+        _LOGGER.info(f"Found {locator.spas} on the network")
+
+        # Let the user choose which spa to connect to
+        data_schema = {
+            vol.Required(
+                CONF_SPA_NAME,
+            ): vol.In([spa.name for spa in locator.spas]),
+        }
+
+        return self.async_show_form(
+            step_id="pick",
+            data_schema=vol.Schema(data_schema),
+            errors=self._errors,
+        )
+
+
     async def async_step_user(self, user_input=None):
 
-        _LOGGER.info(f"Async step user, we have {self._locator}")
+        if user_input == None:
+            _LOGGER.info("Choose scan or address")
+            # Clear errors
+            self._errors = {}
+            return self.async_show_user_form()
 
-        # Wait for locator to have had sufficient time to find something
+        # We got something as an address ...
+        if CONF_SPA_ADDRESS in user_input:
+            user_addr = user_input[CONF_SPA_ADDRESS]
+            _LOGGER.info(f"User provided address '{user_addr}'")
+            # Don't need locator anymore
+            self._locator.complete()
+
+            # Check that this is an IP address, or at least can be interpreted as one
+            try:
+                socket.inet_aton(user_addr)
+            except socket.error:
+                self._errors["base"] = "not_ip"
+                return self.async_show_user_form()
+
+            # And that there is a spa there to connect to ...
+            with GeckoLocator(GECKOLIB_MANAGER_UUID, static_ip=user_addr) as locator:
+                await asyncio.sleep(1)
+                if len(locator.spas) == 0:
+                    self._errors["base"] = "no_spa"
+                    return self.async_show_user_form()
+
+                self._static_ip = user_addr
+                self._errors = {}
+                return self.async_show_select_form(locator)
+
+        _LOGGER.info(f"No address provided, so wait for scan to complete...")
         while not self._locator.has_had_enough_time:
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
         self._locator.complete()
-
-        """Handle a flow initialized by the user."""
-        self._errors = {}
+        _LOGGER.info("Scan is complete")
 
         if len(self._locator.spas) == 0:
             # There are no spas found on your network
             _LOGGER.warning("No spas found on the local network")
             return self.async_abort(reason="no_spas")
 
-        elif len(self._locator.spas) == 1:
-            # There was just one spa, so go ahead and use that
-            spa = self._locator.spas[0]
-            _LOGGER.info("Only one spa (%r) found", spa)
-            config_data = {CONF_SPA_IDENTIFIER: spa.identifier_as_string}
-            return self.async_create_entry(title=spa.name, data=config_data)
+        self._errors = {}
+        return self.async_show_select_form(self._locator)
 
-        elif user_input is not None:
-            # We have previously selected a spaname from the list, so now
-            # connect to the identifier for that spa
-            spa_name = user_input[CONF_SPA_NAME]
-            _LOGGER.info(
-                "Previously, the user selected spa %s to configure, locate it in %r",
-                spa_name,
-                self._locator,
-            )
-            config_data = {
-                CONF_SPA_IDENTIFIER: self._locator.get_spa_from_name(
-                    spa_name
-                ).identifier_as_string,
-            }
-            return self.async_create_entry(
-                title=user_input[CONF_SPA_NAME], data=config_data
-            )
+    async def async_step_pick(self, user_input=None):
+        _LOGGER.info(f"Async step user has picked {user_input}")
 
-        else:
-            # Let the user choose which spa to connect to
-            data_schema = {
-                vol.Required(
-                    CONF_SPA_NAME,
-                ): vol.In([spa.name for spa in self._locator.spas]),
-            }
-
-            return self.async_show_form(
-                step_id="user",
-                data_schema=vol.Schema(data_schema),
-                errors=self._errors,
-            )
+        # We have previously selected a spaname from the list, so now
+        # connect to the identifier for that spa
+        spa_name = user_input[CONF_SPA_NAME]
+        _LOGGER.info(
+            "Previously, the user selected spa %s to configure, locate it in %r",
+            spa_name,
+            self._locator,
+        )
+        config_data = {
+            CONF_SPA_IDENTIFIER: self._locator.get_spa_from_name(
+                spa_name
+            ).identifier_as_string,
+            CONF_SPA_ADDRESS: self._static_ip
+        }
+        return self.async_create_entry(
+            title=user_input[CONF_SPA_NAME], data=config_data
+        )
 
     @staticmethod
     @callback

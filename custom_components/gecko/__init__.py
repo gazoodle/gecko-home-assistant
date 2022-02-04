@@ -14,6 +14,7 @@ from homeassistant.core import Config, HomeAssistant
 
 from .const import (
     CONF_SPA_IDENTIFIER,
+    CONF_SPA_ADDRESS,
     DOMAIN,
     GECKOLIB_MANAGER_UUID,
     PLATFORMS,
@@ -21,6 +22,7 @@ from .const import (
 )
 
 SCAN_INTERVAL = timedelta(seconds=30)
+MAX_RETRIES = 5
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,12 +38,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
-    _LOGGER.info("Setup entry for %s", spa_identifier)
+    spa_identifier = None
+    spa_address = None
 
-    with GeckoLocator(GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier) as locator:
+    if CONF_SPA_ADDRESS in entry.data:
+        spa_address = entry.data.get(CONF_SPA_ADDRESS)
+    spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
+
+    _LOGGER.info(f"Setup entry for ID {spa_identifier}, address {spa_address}")
+
+    retry_count = 1
+    with GeckoLocator(GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier, static_ip=spa_address) as locator:
         _LOGGER.info("Locator %s ready", locator)
         try:
+            spa = None
             spa = await hass.async_add_executor_job(
                 locator.get_spa_from_identifier, spa_identifier
             )
@@ -49,6 +59,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             _LOGGER.info("Waiting for facade to be ready")
             while not facade.is_connected:
                 await asyncio.sleep(0.1)
+                if facade.is_in_error:
+                    _LOGGER.warn("Facade went into error, lets retry")
+                    retry_count = retry_count + 1
+                    if retry_count >= MAX_RETRIES:
+                        raise Exception("Too many retries")
+                    facade = await hass.async_add_executor_job(spa.get_facade, False)
+
             _LOGGER.info("Facade is ready")
             datablock = GeckoDataBlock(facade, entry)
             hass.data[DOMAIN][entry.entry_id] = datablock
