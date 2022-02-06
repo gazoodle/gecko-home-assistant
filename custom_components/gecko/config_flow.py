@@ -47,14 +47,14 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    def async_show_select_form(self, locator):
-        _LOGGER.info(f"Found {locator.spas} on the network")
+    def async_show_select_form(self):
+        _LOGGER.info(f"Found {self._locator.spas} on the network")
 
         # Let the user choose which spa to connect to
         data_schema = {
             vol.Required(
                 CONF_SPA_NAME,
-            ): vol.In([spa.name for spa in locator.spas]),
+            ): vol.In([spa.name for spa in self._locator.spas]),
         }
 
         return self.async_show_form(
@@ -75,7 +75,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if CONF_SPA_ADDRESS in user_input:
             user_addr = user_input[CONF_SPA_ADDRESS]
             _LOGGER.info(f"User provided address '{user_addr}'")
-            # Don't need locator anymore
+            # Don't need existing locator anymore
             self._locator.complete()
 
             # Check that this is an IP address, or at least can be interpreted as one
@@ -86,15 +86,17 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_show_user_form()
 
             # And that there is a spa there to connect to ...
-            with GeckoLocator(GECKOLIB_MANAGER_UUID, static_ip=user_addr) as locator:
-                await asyncio.sleep(1)
-                if len(locator.spas) == 0:
-                    self._errors["base"] = "no_spa"
-                    return self.async_show_user_form()
+            self._locator = GeckoLocator(GECKOLIB_MANAGER_UUID, static_ip=user_addr)
+            self._locator.start_discovery(True)
+            self._locator.complete()
 
-                self._static_ip = user_addr
-                self._errors = {}
-                return self.async_show_select_form(locator)
+            if len(self._locator.spas) == 0:
+                self._errors["base"] = "no_spa"
+                return self.async_show_user_form()
+
+            self._static_ip = user_addr
+            self._errors = {}
+            return self.async_show_select_form()
 
         _LOGGER.info(f"No address provided, so wait for scan to complete...")
         while not self._locator.has_had_enough_time:
@@ -108,7 +110,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="no_spas")
 
         self._errors = {}
-        return self.async_show_select_form(self._locator)
+        return self.async_show_select_form()
 
     async def async_step_pick(self, user_input=None):
         _LOGGER.info(f"Async step user has picked {user_input}")
