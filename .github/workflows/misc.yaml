@@ -23,5 +23,5 @@ jobs:
         uses: "home-assistant/actions/hassfest@master" 
       - run: |
           python3 -m pip install black
-          black . --check
+          black custom_components --check
         name: Format validation
