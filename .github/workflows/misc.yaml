@@ -14,17 +14,14 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v2
         name: Setup Python
-      - uses: actions/cache@v2
-        name: Cache
-        with:
-          path: |
-            ~/.cache/pip
-          key: custom-component-ci
       - uses: hacs/action@main
+        name: HACS Validation
         with:
           CATEGORY: integration
           ignore: wheels
-      - uses: KTibow/ha-blueprint@stable
-        name: CI
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Hassfest validation
+        uses: "home-assistant/actions/hassfest@master" 
+      - run: |
+          python3 -m pip install black
+          black . --check
+        name: Format validation
