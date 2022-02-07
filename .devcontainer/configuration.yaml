@@ -4,5 +4,5 @@ logger:
   default: error
   logs:
     custom_components.gecko: debug
-    geckolib: warn
+    geckolib: info
 

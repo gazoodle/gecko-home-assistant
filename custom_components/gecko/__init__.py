@@ -62,6 +62,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             while not facade.is_connected:
                 await asyncio.sleep(0.1)
                 if facade.is_in_error:
+                    facade.complete()
                     _LOGGER.warn("Facade went into error, lets retry")
                     retry_count = retry_count + 1
                     if retry_count >= MAX_RETRIES:
