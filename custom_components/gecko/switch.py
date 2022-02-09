@@ -10,6 +10,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
     facade = hass.data[DOMAIN][entry.entry_id].facade
     entities = [GeckoBinarySwitch(entry, blower) for blower in facade.blowers]
+    if facade.eco_mode is not None:
+        entities.append(GeckoBinarySwitch(entry, facade.eco_mode))
     async_add_entities(entities, True)
 
 
