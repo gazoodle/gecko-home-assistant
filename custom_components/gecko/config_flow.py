@@ -35,7 +35,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._locator.start_discovery()
 
     def async_show_user_form(self):
-        # Let the user provide an IP address, or indicate they want us to search for one
+        """Let the user provide an IP address, or indicate they want us to search for one"""
         data_schema = {
             vol.Optional(
                 CONF_SPA_ADDRESS,
@@ -48,7 +48,8 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     def async_show_select_form(self):
-        _LOGGER.info(f"Found {self._locator.spas} on the network")
+        """Show the select a spa form"""
+        _LOGGER.info("Found %s on the network", self._locator.spas)
 
         # Let the user choose which spa to connect to
         data_schema = {
@@ -65,7 +66,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
 
-        if user_input == None:
+        if user_input is None:
             _LOGGER.info("Choose scan or address")
             # Clear errors
             self._errors = {}
@@ -74,7 +75,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         # We got something as an address ...
         if CONF_SPA_ADDRESS in user_input:
             user_addr = user_input[CONF_SPA_ADDRESS]
-            _LOGGER.info(f"User provided address '{user_addr}'")
+            _LOGGER.info("User provided address '%s'", user_addr)
             # Don't need existing locator anymore
             self._locator.complete()
 
@@ -98,7 +99,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             self._errors = {}
             return self.async_show_select_form()
 
-        _LOGGER.info(f"No address provided, so wait for scan to complete...")
+        _LOGGER.info("No address provided, so wait for scan to complete...")
         while not self._locator.has_had_enough_time:
             await asyncio.sleep(0.1)
         self._locator.complete()
@@ -113,7 +114,8 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_select_form()
 
     async def async_step_pick(self, user_input=None):
-        _LOGGER.info(f"Async step user has picked {user_input}")
+        """After user has picked a spa"""
+        _LOGGER.info("Async step user has picked {%s}", user_input)
 
         # We have previously selected a spaname from the list, so now
         # connect to the identifier for that spa

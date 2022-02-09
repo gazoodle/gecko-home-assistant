@@ -3,18 +3,22 @@ import logging
 
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, NAME, VERSION
+from .const import DOMAIN, NAME
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class GeckoEntity(Entity):
+    """Entity base of Gecko items"""
+
     def __init__(self, config_entry, automation_entity):
         self.config_entry = config_entry
         self._automation_entity = automation_entity
         self._automation_entity.watch(self._on_change)
         _LOGGER.info(
-            f"Setup entity {self._automation_entity.name}/{self._automation_entity.unique_id}"
+            "Setup entity %s/%s",
+            self._automation_entity.name,
+            self._automation_entity.unique_id,
         )
 
     @property
@@ -49,6 +53,6 @@ class GeckoEntity(Entity):
         """Return false as we're a push model!"""
         return False
 
-    def _on_change(self, sender, old_value, new_value):
+    def _on_change(self, _sender, _old_value, _new_value):
         """Notify HA of the change"""
         self.async_schedule_update_ha_state(force_refresh=True)

@@ -27,7 +27,7 @@ MAX_RETRIES = 5
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup(hass: HomeAssistant, config: Config):
+async def async_setup(_hass: HomeAssistant, _config: Config):
     """Set up this integration using YAML is not supported."""
     return True
 
@@ -45,7 +45,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         spa_address = entry.data.get(CONF_SPA_ADDRESS)
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
 
-    _LOGGER.info(f"Setup entry for ID {spa_identifier}, address {spa_address}")
+    _LOGGER.info("Setup entry for ID %s, address %s", spa_identifier, spa_address)
 
     retry_count = 1
     with GeckoLocator(
@@ -63,7 +63,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
                 await asyncio.sleep(0.1)
                 if facade.is_in_error:
                     facade.complete()
-                    _LOGGER.warn("Facade went into error, lets retry")
+                    _LOGGER.warning("Facade went into error, lets retry")
                     retry_count = retry_count + 1
                     if retry_count >= MAX_RETRIES:
                         raise Exception("Too many retries")
@@ -72,7 +72,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
             _LOGGER.info("Facade is ready")
             datablock = GeckoDataBlock(facade, entry)
             hass.data[DOMAIN][entry.entry_id] = datablock
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Exception during entry setup")
             return False
 

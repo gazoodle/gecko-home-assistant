@@ -2,7 +2,7 @@
 from geckolib import GeckoBlower, GeckoPump
 from homeassistant.components.switch import SwitchEntity
 
-from .const import DOMAIN, ICON
+from .const import DOMAIN
 from .entity import GeckoEntity
 
 
@@ -17,9 +17,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class GeckoBinarySwitch(GeckoEntity, SwitchEntity):
     """gecko switch class."""
-
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""

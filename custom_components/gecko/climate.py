@@ -8,7 +8,7 @@ from homeassistant.components.climate.const import (
     SUPPORT_TARGET_TEMPERATURE,
 )
 
-from .const import DOMAIN, ICON
+from .const import DOMAIN
 from .entity import GeckoEntity
 
 _LOGGER = logging.getLogger(__name__)
@@ -55,7 +55,6 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
 
     def set_hvac_mode(self, hvac_mode):
         del hvac_mode
-        pass
 
     @property
     def hvac_action(self):
