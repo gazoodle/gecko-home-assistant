@@ -7,7 +7,7 @@ NAME = "Gecko"
 DOMAIN = "gecko"
 DOMAIN_DATA = f"{DOMAIN}_data"
 # TODO: Find a way to DRY this const with the one in manifest.json
-VERSION = "0.0.11"
+VERSION = "0.0.12"
 
 ISSUE_URL = "https://github.com/gazoodle/gecko-home-assistant/issues"
 
