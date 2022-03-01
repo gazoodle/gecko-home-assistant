@@ -3,7 +3,7 @@ import logging
 
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, NAME
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -36,17 +36,26 @@ class GeckoEntity(Entity):
         return {
             "identifiers": {(DOMAIN, self._automation_entity.facade.unique_id)},
             "name": self._automation_entity.facade.name,
-            "model": f"{self._automation_entity.facade.spa.pack} {self._automation_entity.facade.spa.version}",
-            "manufacturer": NAME,
+            "model": (
+                f"{self._automation_entity.facade.spa.pack} "
+                f"{self._automation_entity.facade.spa.version}"
+            ),
+            "manufacturer": "Gecko Alliance",
+            "sw_version": (
+                f"SpaPack:v{self._automation_entity.facade.spa.revision} "
+                f"Config:{self._automation_entity.facade.spa.config_version} "
+                f"Log:{self._automation_entity.facade.spa.log_version}"
+            ),
+            "hw_version": (
+                f"EN:{self._automation_entity.facade.spa.intouch_version_en} "
+                f"CO:{self._automation_entity.facade.spa.intouch_version_co}"
+            ),
         }
 
     @property
     def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            # "time": "**TIME**",  # str(self.coordinator.data.get("time")),
-            # "static": "**STATIC**",  # self.coordinator.data.get("static"),
-        }
+        """Return the extra state attributes."""
+        return None
 
     @property
     def should_poll(self) -> bool:
