@@ -15,9 +15,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class GeckoLight(GeckoEntity, LightEntity):
     """Gecko light class."""
 
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
-
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""
         self._automation_entity.turn_on()

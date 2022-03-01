@@ -15,9 +15,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class GeckoSensor(GeckoEntity):
     """Gecko Sensor class."""
 
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
-
     @property
     def state(self):
         """Return the state of the sensor."""

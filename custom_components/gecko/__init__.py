@@ -5,24 +5,20 @@ For more details about this integration, please refer to
 https://github.com/gazoodle/gecko-home-assistant
 """
 import asyncio
-from datetime import timedelta
 import logging
 
-from geckolib import GeckoLocator
+from geckolib import GeckoLocator, GeckoAsyncFacade
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 
 from .const import (
     CONF_SPA_ADDRESS,
     CONF_SPA_IDENTIFIER,
+    CONF_CLIENT_ID,
     DOMAIN,
-    GECKOLIB_MANAGER_UUID,
     PLATFORMS,
     STARTUP_MESSAGE,
 )
-
-SCAN_INTERVAL = timedelta(seconds=30)
-MAX_RETRIES = 5
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -44,53 +40,53 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if CONF_SPA_ADDRESS in entry.data:
         spa_address = entry.data.get(CONF_SPA_ADDRESS)
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
+    if CONF_CLIENT_ID in entry.data:
+        client_id = entry.data.get(CONF_CLIENT_ID)
 
-    _LOGGER.info("Setup entry for ID %s, address %s", spa_identifier, spa_address)
+    _LOGGER.info(
+        "Setup entry for UUID %s, ID %s, address %s",
+        client_id,
+        spa_identifier,
+        spa_address,
+    )
 
-    retry_count = 1
-    with GeckoLocator(
-        GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier, static_ip=spa_address
-    ) as locator:
-        _LOGGER.info("Locator %s ready", locator)
-        try:
-            spa = None
-            spa = await hass.async_add_executor_job(
-                locator.get_spa_from_identifier, spa_identifier
-            )
-            facade = await hass.async_add_executor_job(spa.get_facade, False)
-            _LOGGER.info("Waiting for facade to be ready")
-            while not facade.is_connected:
-                await asyncio.sleep(0.1)
-                if facade.is_in_error:
-                    facade.complete()
-                    _LOGGER.warning("Facade went into error, lets retry")
-                    retry_count = retry_count + 1
-                    if retry_count >= MAX_RETRIES:
-                        raise Exception("Too many retries")
-                    facade = await hass.async_add_executor_job(spa.get_facade, False)
+    async_facade = GeckoAsyncFacade(
+        client_id, spa_identifier=spa_identifier, spa_address=spa_address
+    )
+    await async_facade.__aenter__()
+    datablock = GeckoDataBlock(hass, async_facade, entry)
+    hass.data[DOMAIN][entry.entry_id] = datablock
 
-            _LOGGER.info("Facade is ready")
-            datablock = GeckoDataBlock(facade, entry)
-            hass.data[DOMAIN][entry.entry_id] = datablock
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Exception during entry setup")
-            return False
-
-        for platform in datablock.platforms:
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
-
-        entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
 
 
 class GeckoDataBlock:
-    def __init__(self, facade, entry: ConfigEntry):
+    """Data block for Gecko"""
+
+    def __init__(self, hass, facade, entry: ConfigEntry):
+        self.hass = hass
         self.facade = facade
+        self.facade.watch(self._on_facade_changed)
+        self.entry = entry
+        self._platforms_created = False
+
         self.platforms = [
             platform for platform in PLATFORMS if entry.options.get(platform, True)
         ]
+
+    def _on_facade_changed(self, _sender, *_args):
+        # if sender is self.facade:
+        _LOGGER.debug("Facade status : %s", self.facade.status_line)
+        if self.facade.is_ready and not self._platforms_created:
+            _LOGGER.info("Facade ready ... create platforms")
+            for platform in self.platforms:
+                self.hass.async_add_job(
+                    self.hass.config_entries.async_forward_entry_setup(
+                        self.entry, platform
+                    )
+                )
+            self._platforms_created = True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
@@ -106,7 +102,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
     if unloaded:
         _LOGGER.debug("Finalize facade %r", datablock.facade)
-        datablock.facade.complete()
+        await datablock.facade.__aexit__(None)
+        # datablock.facade.complete()
         hass.data[DOMAIN].pop(entry.entry_id)
     return unloaded
 

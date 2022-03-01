@@ -16,19 +16,22 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class GeckoFan(GeckoEntity, FanEntity):
     """gecko fan class."""
 
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
-
-    async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
+    async def async_turn_on(
+        self,
+        _speed: str | None = None,
+        _percentage: int | None = None,
+        _preset_mode: str | None = None,
+        **_kwargs,
+    ) -> None:
         """Turn on the switch."""
-        self._automation_entity.set_mode("HI")
+        await self._automation_entity.async_set_mode("HI")
 
-    async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
+    async def async_turn_off(self, **_kwargs) -> None:
         """Turn off the switch."""
-        self._automation_entity.set_mode("OFF")
+        await self._automation_entity.async_set_mode("OFF")
 
-    async def async_set_preset_mode(self, preset_mode):
-        self._automation_entity.set_mode(preset_mode)
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        await self._automation_entity.async_set_mode(preset_mode)
 
     @property
     def is_on(self):

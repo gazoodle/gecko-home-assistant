@@ -1,15 +1,19 @@
 """Constants for Gecko."""
 
+import pathlib
+import json
 from geckolib import VERSION as GECKOLIB_VERSION
 
-# Base component constants
-NAME = "Gecko"
-DOMAIN = "gecko"
+# Base component constants, some loaded directly from the manifest
+_LOADER_PATH = pathlib.Path(__loader__.path)
+_MANIFEST_PATH = _LOADER_PATH.parent / "manifest.json"
+with open(_MANIFEST_PATH, encoding="Latin1") as json_file:
+    data = json.load(json_file)
+NAME = f"{data['name']}"
+DOMAIN = f"{data['domain']}"
 DOMAIN_DATA = f"{DOMAIN}_data"
-# TODO: Find a way to DRY this const with the one in manifest.json
-VERSION = "0.0.12"
-
-ISSUE_URL = "https://github.com/gazoodle/gecko-home-assistant/issues"
+VERSION = f"{data['version']}"
+ISSUE_URL = f"{data['issue_tracker']}"
 
 # Icons
 ICON = "mdi:format-quote-close"
@@ -32,6 +36,7 @@ CONF_ENABLED = "enabled"
 CONF_SPA_NAME = "spaname"
 CONF_SPA_IDENTIFIER = "spaidentifier"
 CONF_SPA_ADDRESS = "spaipaddress"
+CONF_CLIENT_ID = "clientid"
 
 # Defaults
 DEFAULT_NAME = DOMAIN
@@ -47,6 +52,3 @@ If you have any issues with this you need to open an issue here:
 {ISSUE_URL}
 -------------------------------------------------------------------
 """
-
-# GECKOLIB constants
-GECKOLIB_MANAGER_UUID = "cc927d39-a1c3-449b-a740-50393cd2699f"

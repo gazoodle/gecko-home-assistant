@@ -53,8 +53,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
     def hvac_mode(self):
         return HVAC_MODE_AUTO
 
-    def set_hvac_mode(self, hvac_mode):
-        del hvac_mode
+    def set_hvac_mode(self, _hvac_mode):
+        pass
 
     @property
     def hvac_action(self):
@@ -73,8 +73,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
             return "Waiting..."
         return self._water_care.modes[self._water_care.mode]
 
-    def set_preset_mode(self, preset_mode):
-        self._water_care.set_mode(preset_mode)
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        await self._water_care.async_set_mode(preset_mode)
 
     @property
     def temperature_unit(self):
@@ -96,6 +96,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
     def max_temp(self):
         return self._automation_entity.max_temp
 
-    def set_temperature(self, **kwargs):
+    async def async_set_temperature(self, **kwargs) -> None:
         """Set the target temperature"""
-        self._automation_entity.set_target_temperature(kwargs["temperature"])
+        await self._automation_entity.async_set_target_temperature(
+            kwargs["temperature"]
+        )
