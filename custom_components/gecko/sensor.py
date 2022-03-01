@@ -1,4 +1,7 @@
 """Sensor platform for Gecko."""
+from datetime import date, datetime
+from homeassistant.helpers.typing import StateType
+from homeassistant.components.sensor import SensorEntity
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity
 
@@ -12,16 +15,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
     )
 
 
-class GeckoSensor(GeckoEntity):
+class GeckoSensor(GeckoEntity, SensorEntity):
     """Gecko Sensor class."""
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
+    def native_value(self) -> StateType | date | datetime:
+        """Return the native value of the sensor."""
         return self._automation_entity.state
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> str | None:
         """Return the unit of measurement."""
         return self._automation_entity.unit_of_measurement
 

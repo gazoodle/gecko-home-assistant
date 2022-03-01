@@ -16,9 +16,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
 class GeckoBinarySensor(GeckoEntity, BinarySensorEntity):
     """gecko binary_sensor class."""
 
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
-
     @property
     def is_on(self):
         """Return true if the binary_sensor is on."""
