@@ -17,8 +17,8 @@ from .const import (
     CONF_SPA_ADDRESS,
     CONF_SPA_IDENTIFIER,
     CONF_CLIENT_ID,
+    CONF_SPA_NAME,
     DOMAIN,
-    PLATFORMS,
     STARTUP_MESSAGE,
 )
 from .datablock import GeckoDataBlock
@@ -56,21 +56,28 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     spa_identifier = None
     spa_address = None
+    spa_name = "Unknown"
 
     if CONF_SPA_ADDRESS in entry.data:
         spa_address = entry.data.get(CONF_SPA_ADDRESS)
+    if CONF_SPA_NAME in entry.data:
+        spa_name = entry.data.get(CONF_SPA_NAME)
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
     client_id = entry.data.get(CONF_CLIENT_ID)
 
     _LOGGER.info(
-        "Setup entry for UUID %s, ID %s, address %s",
+        "Setup entry for UUID %s, ID %s, address %s (%s)",
         client_id,
         spa_identifier,
         spa_address,
+        spa_name,
     )
 
     async_facade = GeckoAsyncFacade(
-        client_id, spa_identifier=spa_identifier, spa_address=spa_address
+        client_id,
+        spa_identifier=spa_identifier,
+        spa_address=spa_address,
+        spa_name=spa_name,
     )
     await async_facade.__aenter__()
     datablock = GeckoDataBlock(hass, async_facade, entry)

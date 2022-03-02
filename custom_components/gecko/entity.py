@@ -29,28 +29,26 @@ class GeckoEntity(Entity):
 
     @property
     def device_info(self):
-        if self._automation_entity.facade.is_ready:
-            return {
-                "identifiers": {(DOMAIN, self._automation_entity.facade.unique_id)},
-                "name": self._automation_entity.facade.name,
-                "model": (
-                    f"{self._automation_entity.facade.spa.pack} "
-                    f"{self._automation_entity.facade.spa.version}"
-                ),
-                "manufacturer": "Gecko Alliance",
-                "sw_version": (
-                    f"SpaPack:v{self._automation_entity.facade.spa.revision} "
-                    f"Config:{self._automation_entity.facade.spa.config_version} "
-                    f"Log:{self._automation_entity.facade.spa.log_version}"
-                ),
-                "hw_version": (
-                    f"EN:{self._automation_entity.facade.spa.intouch_version_en} "
-                    f"CO:{self._automation_entity.facade.spa.intouch_version_co}"
-                ),
-            }
-        return {
+        info = {
             "identifiers": {(DOMAIN, self._automation_entity.facade.unique_id)},
+            "name": self._automation_entity.facade.name,
+            "manufacturer": "Gecko Alliance",
         }
+        if self._automation_entity.facade.is_ready:
+            info["model"] = (
+                f"{self._automation_entity.facade.spa.pack} "
+                f"{self._automation_entity.facade.spa.version}"
+            )
+            info["sw_version"] = (
+                f"SpaPack:v{self._automation_entity.facade.spa.revision} "
+                f"Config:{self._automation_entity.facade.spa.config_version} "
+                f"Log:{self._automation_entity.facade.spa.log_version}"
+            )
+            info["hw_version"] = (
+                f"EN:{self._automation_entity.facade.spa.intouch_version_en} "
+                f"CO:{self._automation_entity.facade.spa.intouch_version_co}"
+            )
+        return info
 
     @property
     def extra_state_attributes(self):

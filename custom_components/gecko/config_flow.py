@@ -137,6 +137,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         spa = next(spa for spa in self._facade.locator.spas if spa.name == spa_name)
         config_data = {
+            CONF_SPA_NAME: spa_name,
             CONF_SPA_IDENTIFIER: spa.identifier_as_string,
             CONF_SPA_ADDRESS: self._static_ip,
             CONF_CLIENT_ID: self._client_id,
