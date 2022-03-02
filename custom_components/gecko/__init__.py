@@ -6,6 +6,8 @@ https://github.com/gazoodle/gecko-home-assistant
 """
 import asyncio
 import logging
+import uuid
+
 
 from geckolib import GeckoAsyncFacade
 from homeassistant.config_entries import ConfigEntry
@@ -28,6 +30,25 @@ async def async_setup(_hass: HomeAssistant, _config: Config):
     return True
 
 
+# Example migration function
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+
+        new = {**config_entry.data}
+        # TODO: modify Config Entry data
+        new[CONF_CLIENT_ID] = f"{uuid.uuid4()}"
+
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data=new)
+
+    _LOGGER.info("Migration to version %s successful", config_entry.version)
+
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
@@ -40,8 +61,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     if CONF_SPA_ADDRESS in entry.data:
         spa_address = entry.data.get(CONF_SPA_ADDRESS)
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
-    if CONF_CLIENT_ID in entry.data:
-        client_id = entry.data.get(CONF_CLIENT_ID)
+    client_id = entry.data.get(CONF_CLIENT_ID)
 
     _LOGGER.info(
         "Setup entry for UUID %s, ID %s, address %s",

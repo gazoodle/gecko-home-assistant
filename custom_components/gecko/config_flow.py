@@ -24,7 +24,7 @@ _LOGGER = logging.getLogger(__name__)
 class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Gecko."""
 
-    VERSION = 1
+    VERSION = 2
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
 
     def __init__(self):
