@@ -3,14 +3,15 @@ from datetime import date, datetime
 from homeassistant.helpers.typing import StateType
 from homeassistant.components.sensor import SensorEntity
 from .const import DOMAIN, ICON
+from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
+    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoSensor(entry, sensor) for sensor in facade.sensors],
+        [GeckoSensor(entry, sensor) for sensor in datablock.facade.sensors],
         True,
     )
 

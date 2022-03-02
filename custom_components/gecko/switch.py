@@ -3,15 +3,16 @@ from geckolib import GeckoBlower, GeckoPump
 from homeassistant.components.switch import SwitchEntity
 
 from .const import DOMAIN
+from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
-    entities = [GeckoBinarySwitch(entry, blower) for blower in facade.blowers]
-    if facade.eco_mode is not None:
-        entities.append(GeckoBinarySwitch(entry, facade.eco_mode))
+    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
+    entities = [GeckoBinarySwitch(entry, blower) for blower in datablock.facade.blowers]
+    if datablock.facade.eco_mode is not None:
+        entities.append(GeckoBinarySwitch(entry, datablock.facade.eco_mode))
     async_add_entities(entities, True)
 
 

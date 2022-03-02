@@ -2,14 +2,19 @@
 from homeassistant.components.binary_sensor import BinarySensorEntity
 
 from .const import DOMAIN
+from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup binary_sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
+    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoBinarySensor(entry, sensor) for sensor in facade.binary_sensors], True
+        [
+            GeckoBinarySensor(entry, sensor)
+            for sensor in datablock.facade.binary_sensors
+        ],
+        True,
     )
 
 

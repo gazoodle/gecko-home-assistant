@@ -9,16 +9,22 @@ from homeassistant.components.climate.const import (
 )
 
 from .const import DOMAIN
+from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
+    """Setup climate platform."""
+    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoClimate(entry, facade.water_heater, facade.water_care)], True
+        [
+            GeckoClimate(
+                entry, datablock.facade.water_heater, datablock.facade.water_care
+            )
+        ],
+        True,
     )
 
 

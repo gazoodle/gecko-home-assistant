@@ -21,6 +21,7 @@ from .const import (
     PLATFORMS,
     STARTUP_MESSAGE,
 )
+from .datablock import GeckoDataBlock
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +31,6 @@ async def async_setup(_hass: HomeAssistant, _config: Config):
     return True
 
 
-# Example migration function
 async def async_migrate_entry(hass, config_entry: ConfigEntry):
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", config_entry.version)
@@ -38,7 +38,6 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     if config_entry.version == 1:
 
         new = {**config_entry.data}
-        # TODO: modify Config Entry data
         new[CONF_CLIENT_ID] = f"{uuid.uuid4()}"
 
         config_entry.version = 2
@@ -79,34 +78,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
-
-
-class GeckoDataBlock:
-    """Data block for Gecko"""
-
-    def __init__(self, hass, facade, entry: ConfigEntry):
-        self.hass = hass
-        self.facade = facade
-        self.facade.watch(self._on_facade_changed)
-        self.entry = entry
-        self._platforms_created = False
-
-        self.platforms = [
-            platform for platform in PLATFORMS if entry.options.get(platform, True)
-        ]
-
-    def _on_facade_changed(self, _sender, *_args):
-        # if sender is self.facade:
-        _LOGGER.debug("Facade status : %s", self.facade.status_line)
-        if self.facade.is_ready and not self._platforms_created:
-            _LOGGER.info("Facade ready ... create platforms")
-            for platform in self.platforms:
-                self.hass.async_add_job(
-                    self.hass.config_entries.async_forward_entry_setup(
-                        self.entry, platform
-                    )
-                )
-            self._platforms_created = True
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):

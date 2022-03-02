@@ -1,20 +1,22 @@
 """Fan platform for Gecko."""
-from geckolib import GeckoPump
 from homeassistant.components.fan import SUPPORT_PRESET_MODE, FanEntity
 
-from .const import DOMAIN, ICON
+from .const import DOMAIN
+from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
-    entities = [GeckoFan(entry, pump) for pump in facade.pumps]
-    async_add_entities(entities, True)
+    """Setup fan platform."""
+    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities(
+        [GeckoFan(entry, pump) for pump in datablock.facade.pumps],
+        True,
+    )
 
 
 class GeckoFan(GeckoEntity, FanEntity):
-    """gecko fan class."""
+    """GeckoFan class."""
 
     async def async_turn_on(
         self,

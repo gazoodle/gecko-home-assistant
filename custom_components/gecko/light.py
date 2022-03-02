@@ -2,14 +2,17 @@
 from homeassistant.components.light import LightEntity
 
 from .const import DOMAIN
+from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
-    entities = [GeckoLight(entry, light) for light in facade.lights]
-    async_add_entities(entities, True)
+    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities(
+        [GeckoLight(entry, light) for light in datablock.facade.lights],
+        True,
+    )
 
 
 class GeckoLight(GeckoEntity, LightEntity):
