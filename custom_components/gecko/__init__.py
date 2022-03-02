@@ -7,7 +7,7 @@ https://github.com/gazoodle/gecko-home-assistant
 import asyncio
 import logging
 
-from geckolib import GeckoLocator, GeckoAsyncFacade
+from geckolib import GeckoAsyncFacade
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 
