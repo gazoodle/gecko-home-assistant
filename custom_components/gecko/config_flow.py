@@ -4,6 +4,7 @@ import socket
 import uuid
 
 from geckolib import GeckoAsyncFacade
+from .spa_manager import GeckoSpaManager
 from homeassistant import config_entries
 from homeassistant.core import callback
 import voluptuous as vol
@@ -34,7 +35,8 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._errors = {}
         self._static_ip = None
         self._client_id = f"{uuid.uuid4()}"
-        self._facade = GeckoAsyncFacade(self._client_id)
+        self._spaman = GeckoSpaManager(self._client_id, None, None)
+        # self._facade = GeckoAsyncFacade(self._client_id)
 
     def async_show_user_form(self):
         """Let the user provide an IP address, or indicate they want us to search for one"""
@@ -51,13 +53,13 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     def async_show_select_form(self):
         """Show the select a spa form"""
-        _LOGGER.info("Found %s on the network", self._facade.locator.spas)
+        _LOGGER.info("Found %s on the network", self._spaman.spa_descriptors)
 
         # Let the user choose which spa to connect to
         data_schema = {
             vol.Required(
                 CONF_SPA_NAME,
-            ): vol.In([spa.name for spa in self._facade.locator.spas]),
+            ): vol.In([spa.name for spa in self._spaman.spa_descriptors]),
         }
 
         return self.async_show_form(
@@ -72,7 +74,8 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is None:
             _LOGGER.info("Choose scan or address")
-            await self._facade.__aenter__()
+            # await self._facade.__aenter__()
+            await self._spaman.__aenter__()
             # Clear errors
             self._errors = {}
             return self.async_show_user_form()
@@ -81,10 +84,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if CONF_SPA_ADDRESS in user_input:
             user_addr = user_input[CONF_SPA_ADDRESS]
             _LOGGER.info("User provided address '%s'", user_addr)
-            # Don't need existing facade now if present
-            if self._facade is not None:
-                await self._facade.__aexit__(None)
-                self._facade = None
 
             # Check that this is an IP address, or at least can be interpreted as one
             try:
@@ -94,15 +93,10 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_show_user_form()
 
             # And that there is a spa there to connect to ...
-            self._facade = GeckoAsyncFacade(self._client_id, spa_address=user_addr)
-            await self._facade.__aenter__()
-            await self._facade.ready()
+            await self._spaman.async_set_spa_info(user_addr, None, None)
+            await self._spaman.wait_for_descriptors()
 
-            # self._locator = GeckoLocator(self._client_id, static_ip=user_addr)
-            # self._locator.start_discovery(True)
-            # self._locator.complete()
-
-            if self._facade.locator.spas is None:
+            if len(self._spaman.spa_descriptors) == 0:
                 self._errors["base"] = "no_spa"
                 return self.async_show_user_form()
 
@@ -111,10 +105,10 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_show_select_form()
 
         _LOGGER.info("No address provided, so wait for scan to complete...")
-        await self._facade.ready()
+        await self._spaman.wait_for_descriptors()
         _LOGGER.info("Scan is complete")
 
-        if self._facade.locator.spas is None:
+        if len(self._spaman.spa_descriptors) == 0:
             # There are no spas found on your network
             _LOGGER.warning("No spas found on the local network")
             return self.async_abort(reason="no_spas")
@@ -132,10 +126,10 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.info(
             "Previously, the user selected spa %s to configure, locate it in %s",
             spa_name,
-            self._facade.locator.spas,
+            self._spaman.spa_descriptors,
         )
 
-        spa = next(spa for spa in self._facade.locator.spas if spa.name == spa_name)
+        spa = next(spa for spa in self._spaman.spa_descriptors if spa.name == spa_name)
         config_data = {
             CONF_SPA_NAME: spa_name,
             CONF_SPA_IDENTIFIER: spa.identifier_as_string,

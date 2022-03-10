@@ -13,7 +13,7 @@
 		"--mount",
 		"type=bind,source=/home/gary/Source/geckolib/src/geckolib,target=/usr/local/python/lib/python3.10/site-packages/geckolib,readonly",
 		"--mount",
-		"type=bind,source=/home/gary/Source/geckolib,target=/workspaces/gecko-home-assistant/geckolib"
+		"type=bind,source=/home/gary/Source/geckolib,target=/usr/src/geckolib"
 	],
 	"extensions": [
 		"ms-python.python",

@@ -9,7 +9,7 @@ import logging
 import uuid
 
 
-from geckolib import GeckoAsyncFacade
+from .spa_manager import GeckoSpaManager
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
 
@@ -21,7 +21,6 @@ from .const import (
     DOMAIN,
     STARTUP_MESSAGE,
 )
-from .datablock import GeckoDataBlock
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -73,15 +72,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         spa_name,
     )
 
-    async_facade = GeckoAsyncFacade(
+    spaman = GeckoSpaManager(
         client_id,
+        hass,
+        entry,
         spa_identifier=spa_identifier,
         spa_address=spa_address,
         spa_name=spa_name,
     )
-    await async_facade.__aenter__()
-    datablock = GeckoDataBlock(hass, async_facade, entry)
-    hass.data[DOMAIN][entry.entry_id] = datablock
+    await spaman.__aenter__()
+    hass.data[DOMAIN][entry.entry_id] = spaman
 
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
@@ -89,19 +89,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
-    datablock = hass.data[DOMAIN][entry.entry_id]
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     unloaded = all(
         await asyncio.gather(
             *[
                 hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in datablock.platforms
+                for platform in spaman.platforms
             ]
         )
     )
     if unloaded:
-        _LOGGER.debug("Finalize facade %r", datablock.facade)
-        await datablock.facade.__aexit__(None)
-        # datablock.facade.complete()
+        _LOGGER.debug("Close SpaMan")
+        await spaman.async_reset()
+        await spaman.__aexit__()
         hass.data[DOMAIN].pop(entry.entry_id)
     return unloaded
 

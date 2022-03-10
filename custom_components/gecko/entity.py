@@ -34,7 +34,7 @@ class GeckoEntity(Entity):
             "name": self._automation_entity.facade.name,
             "manufacturer": "Gecko Alliance",
         }
-        if self._automation_entity.facade.is_ready:
+        if True:  # self._automation_entity.facade.is_ready:
             info["model"] = (
                 f"{self._automation_entity.facade.spa.pack} "
                 f"{self._automation_entity.facade.spa.version}"

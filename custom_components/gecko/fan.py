@@ -2,15 +2,15 @@
 from homeassistant.components.fan import SUPPORT_PRESET_MODE, FanEntity
 
 from .const import DOMAIN
-from .datablock import GeckoDataBlock
 from .entity import GeckoEntity
+from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup fan platform."""
-    datablock: GeckoDataBlock = hass.data[DOMAIN][entry.entry_id]
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoFan(entry, pump) for pump in datablock.facade.pumps],
+        [GeckoFan(entry, pump) for pump in spaman.facade.pumps],
         True,
     )
 
