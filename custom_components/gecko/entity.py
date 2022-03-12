@@ -1,6 +1,8 @@
 """GeckoEntity class"""
 import logging
 
+from geckolib import Observable, GeckoAutomationFacadeBase
+
 from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
@@ -14,7 +16,8 @@ class GeckoEntity(Entity):
     def __init__(self, config_entry, automation_entity):
         self.config_entry = config_entry
         self._automation_entity = automation_entity
-        self._automation_entity.watch(self._on_change)
+        if isinstance(automation_entity, Observable):
+            self._automation_entity.watch(self._on_change)
         _LOGGER.info("Setup entity %r", self)
 
     @property
@@ -25,16 +28,16 @@ class GeckoEntity(Entity):
     @property
     def name(self):
         """Return the name of the entity."""
-        return f"{self._automation_entity.facade.name}: {self._automation_entity.name}"
+        return f"{self._automation_entity.parent_name}: {self._automation_entity.name}"
 
     @property
     def device_info(self):
         info = {
-            "identifiers": {(DOMAIN, self._automation_entity.facade.unique_id)},
-            "name": self._automation_entity.facade.name,
+            "identifiers": {(DOMAIN, self._automation_entity.parent_unique_id)},
+            "name": self._automation_entity.parent_name,
             "manufacturer": "Gecko Alliance",
         }
-        if True:  # self._automation_entity.facade.is_ready:
+        if isinstance(self, GeckoAutomationFacadeBase):
             info["model"] = (
                 f"{self._automation_entity.facade.spa.pack} "
                 f"{self._automation_entity.facade.spa.version}"

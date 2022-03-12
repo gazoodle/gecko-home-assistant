@@ -23,12 +23,13 @@ BINARY_SENSOR_DEVICE_CLASS = "connectivity"
 
 # Platforms
 BINARY_SENSOR = "binary_sensor"
+BUTTON = "button"
 FAN = "fan"
 SENSOR = "sensor"
 SWITCH = "switch"
 CLIMATE = "climate"
 LIGHT = "light"
-PLATFORMS = [BINARY_SENSOR, FAN, SENSOR, SWITCH, CLIMATE, LIGHT]
+PLATFORMS = [BINARY_SENSOR, BUTTON, FAN, SENSOR, SWITCH, CLIMATE, LIGHT]
 
 
 # Configuration and options
