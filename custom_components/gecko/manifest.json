@@ -11,6 +11,6 @@
     "@gazoodle"
   ],
   "requirements": [
-    "geckolib>=0.3.24"
+    "geckolib>=0.3.24, geckolb==0.3.*"
   ]
 }
