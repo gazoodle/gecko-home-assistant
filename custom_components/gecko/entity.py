@@ -1,7 +1,7 @@
 """GeckoEntity class"""
 import logging
 
-from geckolib import Observable, GeckoAutomationFacadeBase
+from geckolib import Observable, GeckoAutomationFacadeBase, GeckoAsyncSpaMan
 
 from homeassistant.helpers.entity import Entity
 
@@ -13,7 +13,8 @@ _LOGGER = logging.getLogger(__name__)
 class GeckoEntity(Entity):
     """Entity base of Gecko items"""
 
-    def __init__(self, config_entry, automation_entity):
+    def __init__(self, spaman, config_entry, automation_entity):
+        self.spaman = spaman
         self.config_entry = config_entry
         self._automation_entity = automation_entity
         if isinstance(automation_entity, Observable):
@@ -33,23 +34,22 @@ class GeckoEntity(Entity):
     @property
     def device_info(self):
         info = {
-            "identifiers": {(DOMAIN, self._automation_entity.parent_unique_id)},
-            "name": self._automation_entity.parent_name,
+            "identifiers": {(DOMAIN, self.spaman.unique_id)},
+            "name": self.spaman.spa_name,
             "manufacturer": "Gecko Alliance",
         }
-        if isinstance(self, GeckoAutomationFacadeBase):
+        if self.spaman.facade is not None:
             info["model"] = (
-                f"{self._automation_entity.facade.spa.pack} "
-                f"{self._automation_entity.facade.spa.version}"
+                f"{self.spaman.facade.spa.pack} " f"{self.spaman.facade.spa.version}"
             )
             info["sw_version"] = (
-                f"SpaPack:v{self._automation_entity.facade.spa.revision} "
-                f"Config:{self._automation_entity.facade.spa.config_version} "
-                f"Log:{self._automation_entity.facade.spa.log_version}"
+                f"SpaPack:v{self.spaman.facade.spa.revision} "
+                f"Config:{self.spaman.facade.spa.config_version} "
+                f"Log:{self.spaman.facade.spa.log_version}"
             )
             info["hw_version"] = (
-                f"EN:{self._automation_entity.facade.spa.intouch_version_en} "
-                f"CO:{self._automation_entity.facade.spa.intouch_version_co}"
+                f"EN:{self.spaman.facade.spa.intouch_version_en} "
+                f"CO:{self.spaman.facade.spa.intouch_version_co}"
             )
         return info
 

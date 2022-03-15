@@ -10,8 +10,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoLight(entry, light) for light in spaman.facade.lights],
-        True,
+        [GeckoLight(spaman, entry, light) for light in spaman.facade.lights]
     )
 
 

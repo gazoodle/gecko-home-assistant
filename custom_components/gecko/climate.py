@@ -19,16 +19,19 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Setup climate platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoClimate(entry, spaman.facade.water_heater, spaman.facade.water_care)],
-        True,
+        [
+            GeckoClimate(
+                spaman, entry, spaman.facade.water_heater, spaman.facade.water_care
+            )
+        ]
     )
 
 
 class GeckoClimate(GeckoEntity, ClimateEntity):
     """Gecko Climate class."""
 
-    def __init__(self, config_entry, automation_entity, water_care):
-        super().__init__(config_entry, automation_entity)
+    def __init__(self, spaman, config_entry, automation_entity, water_care):
+        super().__init__(spaman, config_entry, automation_entity)
         self._water_care = water_care
         self._water_care.watch(self._on_change)
 

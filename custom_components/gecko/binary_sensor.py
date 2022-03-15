@@ -10,8 +10,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
     """Setup binary_sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoBinarySensor(entry, sensor) for sensor in spaman.facade.binary_sensors],
-        True,
+        [
+            GeckoBinarySensor(spaman, entry, sensor)
+            for sensor in spaman.facade.binary_sensors
+        ]
     )
 
 

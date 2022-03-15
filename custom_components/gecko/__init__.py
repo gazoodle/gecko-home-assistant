@@ -1,10 +1,9 @@
 """
-Custom integration to integrate Gecko with Home Assistant.
+Custom integration to integrate Gecko Alliance spa with Home Assistant.
 
 For more details about this integration, please refer to
 https://github.com/gazoodle/gecko-home-assistant
 """
-import asyncio
 import logging
 import uuid
 
@@ -42,7 +41,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
         config_entry.version = 2
         hass.config_entries.async_update_entry(config_entry, data=new)
 
-    _LOGGER.info("Migration to version %s successful", config_entry.version)
+    _LOGGER.debug("Migration to version %s successful", config_entry.version)
 
     return True
 
@@ -64,7 +63,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
     client_id = entry.data.get(CONF_CLIENT_ID)
 
-    _LOGGER.info(
+    _LOGGER.debug(
         "Setup entry for UUID %s, ID %s, address %s (%s)",
         client_id,
         spa_identifier,
@@ -81,6 +80,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
         spa_name=spa_name,
     )
     await spaman.__aenter__()
+    # We always wait for the facade because otherwise the
+    # device info is not available for the first entity
+    await spaman.wait_for_facade()
     hass.data[DOMAIN][entry.entry_id] = spaman
 
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
@@ -90,14 +92,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in spaman.platforms
-            ]
-        )
-    )
+    unloaded = await spaman.unload_platforms()
     if unloaded:
         _LOGGER.debug("Close SpaMan")
         await spaman.async_reset()
@@ -108,6 +103,5 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Reload config entry."""
-    _LOGGER.info("async_reload_entry called")
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)

@@ -10,17 +10,15 @@ from .spa_manager import GeckoSpaManager
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    if spaman.facade is None:
-        async_add_entities(
-            [GeckoSensor(entry, spaman.ping_sensor)],
-            True,
-        )
-    else:
-        async_add_entities(
-            [GeckoSensor(entry, sensor) for sensor in spaman.facade.sensors]
-            + [GeckoSensor(entry, spaman.ping_sensor)],
-            True,
-        )
+    sensors = []
+    if spaman.status_sensor is not None:
+        sensors.append(GeckoSensor(spaman, entry, spaman.status_sensor))
+    if spaman.ping_sensor is not None:
+        sensors.append(GeckoSensor(spaman, entry, spaman.ping_sensor))
+    if spaman.can_use_facade:
+        for sensor in spaman.facade.sensors:
+            sensors.append(GeckoSensor(spaman, entry, sensor))
+    async_add_entities(sensors)
 
 
 class GeckoSensor(GeckoEntity, SensorEntity):

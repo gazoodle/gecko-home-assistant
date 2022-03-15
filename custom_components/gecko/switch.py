@@ -10,10 +10,12 @@ from .spa_manager import GeckoSpaManager
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    entities = [GeckoBinarySwitch(entry, blower) for blower in spaman.facade.blowers]
+    entities = [
+        GeckoBinarySwitch(spaman, entry, blower) for blower in spaman.facade.blowers
+    ]
     if spaman.facade.eco_mode is not None:
-        entities.append(GeckoBinarySwitch(entry, spaman.facade.eco_mode))
-    async_add_entities(entities, True)
+        entities.append(GeckoBinarySwitch(spaman, entry, spaman.facade.eco_mode))
+    async_add_entities(entities)
 
 
 class GeckoBinarySwitch(GeckoEntity, SwitchEntity):

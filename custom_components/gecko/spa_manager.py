@@ -1,11 +1,13 @@
 """GeckoSpaManager class manages the interactions between geckolib and HA"""
+from __future__ import annotations
 
 import asyncio
 import logging
 
-from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent, GeckoSpaState
+from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent
 from homeassistant.config_entries import HomeAssistant, ConfigEntry
 from .const import PLATFORMS, SENSOR, BUTTON
+from queue import Queue
 from typing import Optional
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,49 +27,72 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         self.hass: Optional[HomeAssistant] = hass
         self.entry: Optional[ConfigEntry] = entry
 
+        self._can_use_facade = False
+
         self.platforms = []
+        self._event_queue: Queue = Queue()
+
+    async def __aenter__(self) -> GeckoSpaManager:
+        await super().__aenter__()
+        self.add_task(
+            self._queue_loop(), "Home Assistant Gecko Spa Manager", "HASPAMAN"
+        )
+        return self
+
+    @property
+    def can_use_facade(self) -> bool:
+        """Determine if the facade is ready for use."""
+        return self._can_use_facade
+
+    async def _queue_loop(self) -> None:
+        while True:
+            try:
+                if self._event_queue.empty():
+                    continue
+                event = self._event_queue.get()
+                if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
+                    self._can_use_facade = True
+                    await self.reload()
+                elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
+                    self._can_use_facade = False
+                    await self.reload()
+            finally:
+                await asyncio.sleep(0)
 
     async def handle_event(self, event: GeckoSpaEvent, **kwargs) -> None:
-        _LOGGER.debug(f"{event} : {self.spa_state}")
+        """Handle spa manager events."""
+        _LOGGER.debug("Event: %s, state %s", event, self.spa_state)
+        # The Geckolib spa manager issues events as they happen, and sometimes
+        # this is what you want, but for HA, we want to serialise some of them
+        # because otherwise we end up trying to build platforms at the same time
+        self._event_queue.put(event)
 
-        if event in (
-            GeckoSpaEvent.CONNECTION_FINISHED,
-            GeckoSpaEvent.RUNNING_SPA_DISCONNECTED,
-            GeckoSpaEvent.ERROR_RF_ERROR,
-            GeckoSpaEvent.RUNNING_PING_NO_RESPONSE,
-        ):
-            await self._build_platforms()
-
-    async def _build_platforms(self) -> None:
+    async def unload_platforms(self) -> None:
+        """Unload the platforms that were previously loaded"""
         assert self.hass is not None
 
-        _LOGGER.debug("Build platforms")
+        if len(self.platforms) > 0:
+            _LOGGER.debug("Unload platforms %s", self.platforms)
 
-        # Kill all existing platforms
-        for platform in self.platforms:
-            self.hass.async_add_job(
-                self.hass.config_entries.async_forward_entry_unload(
-                    self.entry, platform
-                )
+            unloaded = await self.hass.config_entries.async_unload_platforms(
+                self.entry, self.platforms
             )
-        if self.platforms:
-            await asyncio.sleep(1)
-        self.platforms = []
+            self.platforms = []
+            return unloaded
 
-        if self.spa_state == GeckoSpaState.CONNECTED:
-            for platform in PLATFORMS:
-                self.hass.async_add_job(
-                    self.hass.config_entries.async_forward_entry_setup(
-                        self.entry, platform
-                    )
-                )
-                self.platforms.append(platform)
+    async def load_platforms(self) -> None:
+        """Load the appropriate platforms"""
+        assert self.hass is not None
+
+        if self._can_use_facade:
+            self.platforms = PLATFORMS
         else:
-            self.hass.async_add_job(
-                self.hass.config_entries.async_forward_entry_setup(self.entry, BUTTON)
-            )
-            self.hass.async_add_job(
-                self.hass.config_entries.async_forward_entry_setup(self.entry, SENSOR)
-            )
-            self.platforms.append(BUTTON)
-            self.platforms.append(SENSOR)
+            self.platforms = [SENSOR, BUTTON]
+
+        _LOGGER.debug("Load platforms %s", self.platforms)
+        self.hass.config_entries.async_setup_platforms(self.entry, self.platforms)
+
+    async def reload(self) -> None:
+        """Reload the platforms"""
+        await self.unload_platforms()
+        await self.load_platforms()
