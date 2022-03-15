@@ -33,7 +33,6 @@ PLATFORMS = [BINARY_SENSOR, BUTTON, FAN, SENSOR, SWITCH, CLIMATE, LIGHT]
 
 
 # Configuration and options
-CONF_ENABLED = "enabled"
 CONF_SPA_NAME = "spaname"
 CONF_SPA_IDENTIFIER = "spaidentifier"
 CONF_SPA_ADDRESS = "spaipaddress"
