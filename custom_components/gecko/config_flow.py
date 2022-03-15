@@ -1,9 +1,10 @@
 """Adds config flow for Gecko."""
-import asyncio
 import logging
 import socket
+import uuid
 
-from geckolib import GeckoLocator
+from geckolib import GeckoAsyncFacade
+from .spa_manager import GeckoSpaManager
 from homeassistant import config_entries
 from homeassistant.core import callback
 import voluptuous as vol
@@ -12,9 +13,10 @@ from .const import (  # pylint: disable=unused-import
     CONF_SPA_ADDRESS,
     CONF_SPA_IDENTIFIER,
     CONF_SPA_NAME,
+    CONF_CLIENT_ID,
     DOMAIN,
-    GECKOLIB_MANAGER_UUID,
     PLATFORMS,
+    STARTUP_MESSAGE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,16 +25,18 @@ _LOGGER = logging.getLogger(__name__)
 class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Gecko."""
 
-    VERSION = 1
+    VERSION = 2
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
 
     def __init__(self):
         """Initialize."""
+        _LOGGER.info(STARTUP_MESSAGE)
+
         self._errors = {}
         self._static_ip = None
-        _LOGGER.info("Gecko scan started")
-        self._locator = GeckoLocator(GECKOLIB_MANAGER_UUID)
-        self._locator.start_discovery()
+        self._client_id = f"{uuid.uuid4()}"
+        self._spaman = GeckoSpaManager(self._client_id, None, None)
+        # self._facade = GeckoAsyncFacade(self._client_id)
 
     def async_show_user_form(self):
         """Let the user provide an IP address, or indicate they want us to search for one"""
@@ -49,13 +53,13 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     def async_show_select_form(self):
         """Show the select a spa form"""
-        _LOGGER.info("Found %s on the network", self._locator.spas)
+        _LOGGER.info("Found %s on the network", self._spaman.spa_descriptors)
 
         # Let the user choose which spa to connect to
         data_schema = {
             vol.Required(
                 CONF_SPA_NAME,
-            ): vol.In([spa.name for spa in self._locator.spas]),
+            ): vol.In([spa.name for spa in self._spaman.spa_descriptors]),
         }
 
         return self.async_show_form(
@@ -66,8 +70,12 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(self, user_input=None):
 
+        _LOGGER.debug("async_step_user user_input = %s", user_input)
+
         if user_input is None:
             _LOGGER.info("Choose scan or address")
+            # await self._facade.__aenter__()
+            await self._spaman.__aenter__()
             # Clear errors
             self._errors = {}
             return self.async_show_user_form()
@@ -76,8 +84,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if CONF_SPA_ADDRESS in user_input:
             user_addr = user_input[CONF_SPA_ADDRESS]
             _LOGGER.info("User provided address '%s'", user_addr)
-            # Don't need existing locator anymore
-            self._locator.complete()
 
             # Check that this is an IP address, or at least can be interpreted as one
             try:
@@ -87,11 +93,10 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
                 return self.async_show_user_form()
 
             # And that there is a spa there to connect to ...
-            self._locator = GeckoLocator(GECKOLIB_MANAGER_UUID, static_ip=user_addr)
-            self._locator.start_discovery(True)
-            self._locator.complete()
+            await self._spaman.async_set_spa_info(user_addr, None, None)
+            await self._spaman.wait_for_descriptors()
 
-            if len(self._locator.spas) == 0:
+            if len(self._spaman.spa_descriptors) == 0:
                 self._errors["base"] = "no_spa"
                 return self.async_show_user_form()
 
@@ -100,12 +105,10 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_show_select_form()
 
         _LOGGER.info("No address provided, so wait for scan to complete...")
-        while not self._locator.has_had_enough_time:
-            await asyncio.sleep(0.1)
-        self._locator.complete()
+        await self._spaman.wait_for_descriptors()
         _LOGGER.info("Scan is complete")
 
-        if len(self._locator.spas) == 0:
+        if len(self._spaman.spa_descriptors) == 0:
             # There are no spas found on your network
             _LOGGER.warning("No spas found on the local network")
             return self.async_abort(reason="no_spas")
@@ -121,15 +124,17 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         # connect to the identifier for that spa
         spa_name = user_input[CONF_SPA_NAME]
         _LOGGER.info(
-            "Previously, the user selected spa %s to configure, locate it in %r",
+            "Previously, the user selected spa %s to configure, locate it in %s",
             spa_name,
-            self._locator,
+            self._spaman.spa_descriptors,
         )
+
+        spa = next(spa for spa in self._spaman.spa_descriptors if spa.name == spa_name)
         config_data = {
-            CONF_SPA_IDENTIFIER: self._locator.get_spa_from_name(
-                spa_name
-            ).identifier_as_string,
+            CONF_SPA_NAME: spa_name,
+            CONF_SPA_IDENTIFIER: spa.identifier_as_string,
             CONF_SPA_ADDRESS: self._static_ip,
+            CONF_CLIENT_ID: self._client_id,
         }
         return self.async_create_entry(
             title=user_input[CONF_SPA_NAME], data=config_data

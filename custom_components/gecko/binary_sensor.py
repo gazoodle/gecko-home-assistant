@@ -3,21 +3,22 @@ from homeassistant.components.binary_sensor import BinarySensorEntity
 
 from .const import DOMAIN
 from .entity import GeckoEntity
+from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup binary_sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoBinarySensor(entry, sensor) for sensor in facade.binary_sensors], True
+        [
+            GeckoBinarySensor(spaman, entry, sensor)
+            for sensor in spaman.facade.binary_sensors
+        ]
     )
 
 
 class GeckoBinarySensor(GeckoEntity, BinarySensorEntity):
     """gecko binary_sensor class."""
-
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
 
     @property
     def is_on(self):

@@ -10,23 +10,28 @@ from homeassistant.components.climate.const import (
 
 from .const import DOMAIN
 from .entity import GeckoEntity
+from .spa_manager import GeckoSpaManager
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
+    """Setup climate platform."""
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
-        [GeckoClimate(entry, facade.water_heater, facade.water_care)], True
+        [
+            GeckoClimate(
+                spaman, entry, spaman.facade.water_heater, spaman.facade.water_care
+            )
+        ]
     )
 
 
 class GeckoClimate(GeckoEntity, ClimateEntity):
     """Gecko Climate class."""
 
-    def __init__(self, config_entry, automation_entity, water_care):
-        super().__init__(config_entry, automation_entity)
+    def __init__(self, spaman, config_entry, automation_entity, water_care):
+        super().__init__(spaman, config_entry, automation_entity)
         self._water_care = water_care
         self._water_care.watch(self._on_change)
 
@@ -53,8 +58,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
     def hvac_mode(self):
         return HVAC_MODE_AUTO
 
-    def set_hvac_mode(self, hvac_mode):
-        del hvac_mode
+    def set_hvac_mode(self, _hvac_mode):
+        pass
 
     @property
     def hvac_action(self):
@@ -73,8 +78,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
             return "Waiting..."
         return self._water_care.modes[self._water_care.mode]
 
-    def set_preset_mode(self, preset_mode):
-        self._water_care.set_mode(preset_mode)
+    async def async_set_preset_mode(self, preset_mode: str) -> None:
+        await self._water_care.async_set_mode(preset_mode)
 
     @property
     def temperature_unit(self):
@@ -96,6 +101,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
     def max_temp(self):
         return self._automation_entity.max_temp
 
-    def set_temperature(self, **kwargs):
+    async def async_set_temperature(self, **kwargs) -> None:
         """Set the target temperature"""
-        self._automation_entity.set_target_temperature(kwargs["temperature"])
+        await self._automation_entity.async_set_target_temperature(
+            kwargs["temperature"]
+        )

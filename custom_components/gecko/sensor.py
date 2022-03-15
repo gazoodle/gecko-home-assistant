@@ -1,30 +1,36 @@
 """Sensor platform for Gecko."""
+from datetime import date, datetime
+from homeassistant.helpers.typing import StateType
+from homeassistant.components.sensor import SensorEntity
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity
+from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
-    async_add_entities(
-        [GeckoSensor(entry, sensor) for sensor in facade.sensors],
-        True,
-    )
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
+    sensors = []
+    if spaman.status_sensor is not None:
+        sensors.append(GeckoSensor(spaman, entry, spaman.status_sensor))
+    if spaman.ping_sensor is not None:
+        sensors.append(GeckoSensor(spaman, entry, spaman.ping_sensor))
+    if spaman.can_use_facade:
+        for sensor in spaman.facade.sensors:
+            sensors.append(GeckoSensor(spaman, entry, sensor))
+    async_add_entities(sensors)
 
 
-class GeckoSensor(GeckoEntity):
+class GeckoSensor(GeckoEntity, SensorEntity):
     """Gecko Sensor class."""
 
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
-
     @property
-    def state(self):
-        """Return the state of the sensor."""
+    def native_value(self) -> StateType | date | datetime:
+        """Return the native value of the sensor."""
         return self._automation_entity.state
 
     @property
-    def unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> str | None:
         """Return the unit of measurement."""
         return self._automation_entity.unit_of_measurement
 

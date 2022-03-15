@@ -11,7 +11,7 @@
         "--network",
         "mynet",
         "--mount",
-        "type=bind,source=/home/gary/Source/geckolib/src/geckolib,target=/usr/lib/python3.8/site-packages/geckolib,readonly"
+        "type=bind,source=/home/gary/Source/geckolib/src/geckolib,target=/usr/local/python/lib/python3.10/site-packages/geckolib,readonly"
     ],
     "extensions": [
         "ms-python.python",
@@ -23,12 +23,15 @@
         "editor.tabSize": 4,
         "terminal.integrated.shell.linux": "/bin/bash",
         "python.pythonPath": "/usr/bin/python3",
-        "python.linting.pylintEnabled": true,
+        "python.linting.pylintEnabled": false,
+        "python.linting.flake8Enabled": true,
+        "python.linting.mypyEnabled": true,
         "python.linting.enabled": true,
-        "python.formatting.provider": "black",
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
+        "editor.defaultFormatter": null,
+        "python.formatting.provider": "black",
         "files.trimTrailingWhitespace": true
     }
 }

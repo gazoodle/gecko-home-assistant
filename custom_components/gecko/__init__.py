@@ -1,34 +1,49 @@
 """
-Custom integration to integrate Gecko with Home Assistant.
+Custom integration to integrate Gecko Alliance spa with Home Assistant.
 
 For more details about this integration, please refer to
 https://github.com/gazoodle/gecko-home-assistant
 """
-import asyncio
-from datetime import timedelta
 import logging
+import uuid
 
-from geckolib import GeckoLocator
+
+from .spa_manager import GeckoSpaManager
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import Config, HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
     CONF_SPA_ADDRESS,
     CONF_SPA_IDENTIFIER,
+    CONF_CLIENT_ID,
+    CONF_SPA_NAME,
     DOMAIN,
-    GECKOLIB_MANAGER_UUID,
-    PLATFORMS,
     STARTUP_MESSAGE,
 )
-
-SCAN_INTERVAL = timedelta(seconds=30)
-MAX_RETRIES = 5
 
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup(_hass: HomeAssistant, _config: Config):
     """Set up this integration using YAML is not supported."""
+    return True
+
+
+async def async_migrate_entry(hass, config_entry: ConfigEntry):
+    """Migrate old entry."""
+    _LOGGER.debug("Migrating from version %s", config_entry.version)
+
+    if config_entry.version == 1:
+
+        new = {**config_entry.data}
+        new[CONF_CLIENT_ID] = f"{uuid.uuid4()}"
+
+        config_entry.version = 2
+        hass.config_entries.async_update_entry(config_entry, data=new)
+
+    _LOGGER.debug("Migration to version %s successful", config_entry.version)
+
     return True
 
 
@@ -40,79 +55,59 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     spa_identifier = None
     spa_address = None
+    spa_name = None
 
     if CONF_SPA_ADDRESS in entry.data:
         spa_address = entry.data.get(CONF_SPA_ADDRESS)
+    if CONF_SPA_NAME in entry.data:
+        spa_name = entry.data.get(CONF_SPA_NAME)
     spa_identifier = entry.data.get(CONF_SPA_IDENTIFIER)
+    client_id = entry.data.get(CONF_CLIENT_ID)
 
-    _LOGGER.info("Setup entry for ID %s, address %s", spa_identifier, spa_address)
+    _LOGGER.debug(
+        "Setup entry for UUID %s, ID %s, address %s (%s)",
+        client_id,
+        spa_identifier,
+        spa_address,
+        spa_name,
+    )
 
-    retry_count = 1
-    with GeckoLocator(
-        GECKOLIB_MANAGER_UUID, spa_to_find=spa_identifier, static_ip=spa_address
-    ) as locator:
-        _LOGGER.info("Locator %s ready", locator)
-        try:
-            spa = None
-            spa = await hass.async_add_executor_job(
-                locator.get_spa_from_identifier, spa_identifier
-            )
-            facade = await hass.async_add_executor_job(spa.get_facade, False)
-            _LOGGER.info("Waiting for facade to be ready")
-            while not facade.is_connected:
-                await asyncio.sleep(0.1)
-                if facade.is_in_error:
-                    facade.complete()
-                    _LOGGER.warning("Facade went into error, lets retry")
-                    retry_count = retry_count + 1
-                    if retry_count >= MAX_RETRIES:
-                        raise Exception("Too many retries")
-                    facade = await hass.async_add_executor_job(spa.get_facade, False)
+    spaman = GeckoSpaManager(
+        client_id,
+        hass,
+        entry,
+        spa_identifier=spa_identifier,
+        spa_address=spa_address,
+        spa_name=spa_name,
+    )
+    await spaman.__aenter__()
+    # We always wait for the facade because otherwise the
+    # device info is not available for the first entity
+    if not await spaman.wait_for_facade():
+        _LOGGER.error(
+            "Failed to connect to spa %s address %s", spa_identifier, spa_address
+        )
+        raise ConfigEntryNotReady
 
-            _LOGGER.info("Facade is ready")
-            datablock = GeckoDataBlock(facade, entry)
-            hass.data[DOMAIN][entry.entry_id] = datablock
-        except Exception:  # pylint: disable=broad-except
-            _LOGGER.exception("Exception during entry setup")
-            return False
+    hass.data[DOMAIN][entry.entry_id] = spaman
 
-        for platform in datablock.platforms:
-            hass.async_add_job(
-                hass.config_entries.async_forward_entry_setup(entry, platform)
-            )
-
-        entry.async_on_unload(entry.add_update_listener(async_reload_entry))
+    entry.async_on_unload(entry.add_update_listener(async_reload_entry))
     return True
-
-
-class GeckoDataBlock:
-    def __init__(self, facade, entry: ConfigEntry):
-        self.facade = facade
-        self.platforms = [
-            platform for platform in PLATFORMS if entry.options.get(platform, True)
-        ]
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Handle removal of an entry."""
-    datablock = hass.data[DOMAIN][entry.entry_id]
-    unloaded = all(
-        await asyncio.gather(
-            *[
-                hass.config_entries.async_forward_entry_unload(entry, platform)
-                for platform in datablock.platforms
-            ]
-        )
-    )
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
+    unloaded = await spaman.unload_platforms()
     if unloaded:
-        _LOGGER.debug("Finalize facade %r", datablock.facade)
-        datablock.facade.complete()
+        _LOGGER.debug("Close SpaMan")
+        await spaman.async_reset()
+        await spaman.__aexit__()
         hass.data[DOMAIN].pop(entry.entry_id)
     return unloaded
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Reload config entry."""
-    _LOGGER.info("async_reload_entry called")
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)

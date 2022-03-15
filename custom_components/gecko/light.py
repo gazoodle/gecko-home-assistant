@@ -3,20 +3,19 @@ from homeassistant.components.light import LightEntity
 
 from .const import DOMAIN
 from .entity import GeckoEntity
+from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Setup sensor platform."""
-    facade = hass.data[DOMAIN][entry.entry_id].facade
-    entities = [GeckoLight(entry, light) for light in facade.lights]
-    async_add_entities(entities, True)
+    spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
+    async_add_entities(
+        [GeckoLight(spaman, entry, light) for light in spaman.facade.lights]
+    )
 
 
 class GeckoLight(GeckoEntity, LightEntity):
     """Gecko light class."""
-
-    def __init__(self, config_entry, automation_entity):
-        super().__init__(config_entry, automation_entity)
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""

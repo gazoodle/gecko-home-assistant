@@ -1,9 +1,11 @@
 """GeckoEntity class"""
 import logging
 
+from geckolib import Observable, GeckoAutomationFacadeBase, GeckoAsyncSpaMan
+
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, NAME
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -11,15 +13,13 @@ _LOGGER = logging.getLogger(__name__)
 class GeckoEntity(Entity):
     """Entity base of Gecko items"""
 
-    def __init__(self, config_entry, automation_entity):
+    def __init__(self, spaman, config_entry, automation_entity):
+        self.spaman = spaman
         self.config_entry = config_entry
         self._automation_entity = automation_entity
-        self._automation_entity.watch(self._on_change)
-        _LOGGER.info(
-            "Setup entity %s/%s",
-            self._automation_entity.name,
-            self._automation_entity.unique_id,
-        )
+        if isinstance(automation_entity, Observable):
+            self._automation_entity.watch(self._on_change)
+        _LOGGER.info("Setup entity %r", self)
 
     @property
     def unique_id(self):
@@ -29,24 +29,34 @@ class GeckoEntity(Entity):
     @property
     def name(self):
         """Return the name of the entity."""
-        return f"{self._automation_entity.facade.name}: {self._automation_entity.name}"
+        return f"{self._automation_entity.parent_name}: {self._automation_entity.name}"
 
     @property
     def device_info(self):
-        return {
-            "identifiers": {(DOMAIN, self._automation_entity.facade.unique_id)},
-            "name": self._automation_entity.facade.name,
-            "model": f"{self._automation_entity.facade.spa.pack} {self._automation_entity.facade.spa.version}",
-            "manufacturer": NAME,
+        info = {
+            "identifiers": {(DOMAIN, self.spaman.unique_id)},
+            "name": self.spaman.spa_name,
+            "manufacturer": "Gecko Alliance",
         }
+        if self.spaman.facade is not None:
+            info["model"] = (
+                f"{self.spaman.facade.spa.pack} " f"{self.spaman.facade.spa.version}"
+            )
+            info["sw_version"] = (
+                f"SpaPack:v{self.spaman.facade.spa.revision} "
+                f"Config:{self.spaman.facade.spa.config_version} "
+                f"Log:{self.spaman.facade.spa.log_version}"
+            )
+            info["hw_version"] = (
+                f"EN:{self.spaman.facade.spa.intouch_version_en} "
+                f"CO:{self.spaman.facade.spa.intouch_version_co}"
+            )
+        return info
 
     @property
     def extra_state_attributes(self):
-        """Return the state attributes."""
-        return {
-            # "time": "**TIME**",  # str(self.coordinator.data.get("time")),
-            # "static": "**STATIC**",  # self.coordinator.data.get("static"),
-        }
+        """Return the extra state attributes."""
+        return None
 
     @property
     def should_poll(self) -> bool:
@@ -56,3 +66,6 @@ class GeckoEntity(Entity):
     def _on_change(self, _sender, _old_value, _new_value):
         """Notify HA of the change"""
         self.async_schedule_update_ha_state(force_refresh=True)
+
+    def __repr__(self):
+        return f"{self._automation_entity.name}/{self._automation_entity.unique_id}"
