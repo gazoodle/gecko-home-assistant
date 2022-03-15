@@ -27,5 +27,5 @@ class GeckoReconnectButton(GeckoButton):
         await self._automation_entity.async_press()
 
     @property
-    def icon(self) -> str | None:
+    def icon(self):
         return "mdi:connection"

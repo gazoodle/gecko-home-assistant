@@ -17,9 +17,9 @@ class GeckoFan(GeckoEntity, FanEntity):
 
     async def async_turn_on(
         self,
-        _speed: str | None = None,
-        _percentage: int | None = None,
-        _preset_mode: str | None = None,
+        _speed=None,
+        _percentage=None,
+        _preset_mode=None,
         **_kwargs,
     ) -> None:
         """Turn on the switch."""

@@ -25,12 +25,12 @@ class GeckoSensor(GeckoEntity, SensorEntity):
     """Gecko Sensor class."""
 
     @property
-    def native_value(self) -> StateType | date | datetime:
+    def native_value(self):
         """Return the native value of the sensor."""
         return self._automation_entity.state
 
     @property
-    def native_unit_of_measurement(self) -> str | None:
+    def native_unit_of_measurement(self):
         """Return the unit of measurement."""
         return self._automation_entity.unit_of_measurement
 
