@@ -54,7 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
 
     spa_identifier = None
     spa_address = None
-    spa_name = "Unknown"
+    spa_name = None
 
     if CONF_SPA_ADDRESS in entry.data:
         spa_address = entry.data.get(CONF_SPA_ADDRESS)
