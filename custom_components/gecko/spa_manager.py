@@ -4,7 +4,7 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent
+from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent, GeckoConstants
 from homeassistant.config_entries import HomeAssistant, ConfigEntry
 from .const import PLATFORMS, SENSOR, BUTTON
 from queue import Queue
@@ -62,7 +62,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
                     await self.reload()
 
             finally:
-                await asyncio.sleep(0)
+                await asyncio.sleep(GeckoConstants.ASYNCIO_SLEEP_TIMEOUT_FOR_YIELD)
 
     async def handle_event(self, event: GeckoSpaEvent, **kwargs) -> None:
         """Handle spa manager events."""
