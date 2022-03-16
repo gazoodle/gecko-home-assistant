@@ -49,22 +49,19 @@ Using your HA configuration directory (folder) as a starting point you should no
 custom_components/gecko/.translations/en.json
 custom_components/gecko/__init__.py
 custom_components/gecko/binary_sensor.py
+custom_components/gecko/button.py
 custom_components/gecko/climate.py
 custom_components/gecko/config_flow.py
 custom_components/gecko/const.py
+custom_components/gecko/fan.py
 custom_components/gecko/light.py
 custom_components/gecko/manifest.json
 custom_components/gecko/sensor.py
+custom_components/gecko/spa_manager.py
 custom_components/gecko/switch.py
 ```
 
 ## Configuration is done in the UI
-
-## Revisions
-
-0.0.8 - Support for static IP
-        Watercare setting more responsive in UI
-        Supports many more tubs (geckolib 0.3.22)
 
 <!---->
 
