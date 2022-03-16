@@ -49,13 +49,18 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
             try:
                 if self._event_queue.empty():
                     continue
+
                 event = self._event_queue.get()
                 if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
+                    # Wait for a single update so we have reminders and watercare
+                    await self.facade.wait_for_one_update()
                     self._can_use_facade = True
                     await self.reload()
+
                 elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
                     self._can_use_facade = False
                     await self.reload()
+
             finally:
                 await asyncio.sleep(0)
 
