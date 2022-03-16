@@ -13,6 +13,7 @@ _Component to integrate with [Gecko Spas][gecko-ha]._
 
 Platform | Description
 -- | --
+`button` | Reconnect button.
 `binary_sensor` | Various on/off spa sensors.
 `sensor` | Text/Enum spa sensors.
 `switch` | Waterfalls.
@@ -20,7 +21,9 @@ Platform | Description
 `light`  | Spa lights
 `climate` | Spa water heater
 
-<!-- ![example][exampleimg]) -->
+## Example screen shot
+
+![Screenshots][screenshotimg]
 
 {% if not installed %}
 ## Installation
@@ -41,7 +44,7 @@ Platform | Description
 [commits]: https://github.com/gazoodle/gecko-home-assistant/commits/master
 [hacs]: https://github.com/custom-components/hacs
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-[exampleimg]: example.png
+[screenshotimg]: screenshot.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/gazoodle/gecko-home-assistant.svg?style=for-the-badge

@@ -2,6 +2,7 @@
     "name": "Gecko",
     "hacs": "0.24.0",
     "domains": [
+        "button",
         "binary_sensor",
         "sensor",
         "switch",
