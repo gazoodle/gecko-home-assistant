@@ -18,6 +18,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
         sensors.append(GeckoSensor(spaman, entry, spaman.ping_sensor))
     if spaman.radio_sensor is not None:
         sensors.append(GeckoSensor(spaman, entry, spaman.radio_sensor))
+    if spaman.channel_sensor is not None:
+        sensors.append(GeckoSensor(spaman, entry, spaman.channel_sensor))
     if spaman.can_use_facade:
         for sensor in spaman.facade.sensors:
             sensors.append(GeckoSensor(spaman, entry, sensor))
