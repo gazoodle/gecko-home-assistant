@@ -70,7 +70,7 @@ custom_components/gecko/switch.py
 [gecko-ha]: https://github.com/gazoodle/gecko-home-assistant
 [commits-shield]: https://img.shields.io/github/commit-activity/y/gazoodle/gecko-home-assistant.svg?style=for-the-badge
 [commits]: https://github.com/gazoodle/gecko-home-assistant/commits/master
-[hacs]: https://github.com/custom-components/hacs
+[hacs]: https://github.com/hacs/integration
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
 [screenshotimg]: screenshot.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
