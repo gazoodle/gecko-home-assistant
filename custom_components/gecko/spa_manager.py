@@ -95,7 +95,9 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
             self.platforms = [SENSOR, BUTTON]
 
         _LOGGER.debug("Load platforms %s", self.platforms)
-        self.hass.config_entries.async_setup_platforms(self.entry, self.platforms)
+        await self.hass.config_entries.async_forward_entry_setups(
+            self.entry, self.platforms
+        )
 
     async def reload(self) -> None:
         """Reload the platforms"""
