@@ -69,7 +69,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_user(self, user_input=None):
-
         _LOGGER.debug("async_step_user user_input = %s", user_input)
 
         if user_input is None:

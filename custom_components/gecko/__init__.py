@@ -35,7 +35,6 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     _LOGGER.debug("Migrating from version %s", config_entry.version)
 
     if config_entry.version == 1:
-
         new = {**config_entry.data}
         new[CONF_CLIENT_ID] = f"{uuid.uuid4()}"
 
