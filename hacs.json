@@ -1,6 +1,5 @@
 {
     "name": "Gecko",
     "hacs": "0.24.0",
-    "iot_class": "Local Push",
     "homeassistant": "2023.1.1"
 }
