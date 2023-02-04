@@ -3,6 +3,7 @@ from datetime import datetime, timezone, timedelta
 from geckolib import GeckoReminderType
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.entity import EntityCategory
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
@@ -13,13 +14,21 @@ async def async_setup_entry(hass, entry, async_add_entities):
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     sensors = []
     if spaman.status_sensor is not None:
-        sensors.append(GeckoSensor(spaman, entry, spaman.status_sensor))
+        sensors.append(
+            GeckoSensor(spaman, entry, spaman.status_sensor, EntityCategory.DIAGNOSTIC)
+        )
     if spaman.ping_sensor is not None:
-        sensors.append(GeckoSensor(spaman, entry, spaman.ping_sensor))
+        sensors.append(
+            GeckoSensor(spaman, entry, spaman.ping_sensor, EntityCategory.DIAGNOSTIC)
+        )
     if spaman.radio_sensor is not None:
-        sensors.append(GeckoSensor(spaman, entry, spaman.radio_sensor))
+        sensors.append(
+            GeckoSensor(spaman, entry, spaman.radio_sensor, EntityCategory.DIAGNOSTIC)
+        )
     if spaman.channel_sensor is not None:
-        sensors.append(GeckoSensor(spaman, entry, spaman.channel_sensor))
+        sensors.append(
+            GeckoSensor(spaman, entry, spaman.channel_sensor, EntityCategory.DIAGNOSTIC)
+        )
     if spaman.can_use_facade:
         for sensor in spaman.facade.sensors:
             sensors.append(GeckoSensor(spaman, entry, sensor))

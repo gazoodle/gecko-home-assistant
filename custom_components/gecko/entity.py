@@ -1,10 +1,12 @@
 """GeckoEntity class"""
 import logging
 
+from typing import Optional
 from geckolib import Observable
 from .spa_manager import GeckoSpaManager
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity import Entity, EntityCategory
 from homeassistant.config_entries import ConfigEntry
+
 
 from .const import DOMAIN
 
@@ -27,6 +29,7 @@ class GeckoEntityBase(Entity):
         self._unique_id = unique_id
         self._name = name
         self._parent_name = parent_name
+        self._entity_category = None
         _LOGGER.info("Setup entity %r", self)
 
     @property
@@ -62,6 +65,11 @@ class GeckoEntityBase(Entity):
         return info
 
     @property
+    def entity_category(self):
+        """Return the entity category"""
+        return self._entity_category
+
+    @property
     def extra_state_attributes(self):
         """Return the extra state attributes."""
         return None
@@ -79,7 +87,11 @@ class GeckoEntity(GeckoEntityBase):
     """Entity base of Gecko items"""
 
     def __init__(
-        self, spaman: GeckoSpaManager, config_entry: ConfigEntry, automation_entity
+        self,
+        spaman: GeckoSpaManager,
+        config_entry: ConfigEntry,
+        automation_entity,
+        entity_category: Optional[Entity] = None,
     ):
         super().__init__(
             spaman,
@@ -91,6 +103,8 @@ class GeckoEntity(GeckoEntityBase):
         self._automation_entity = automation_entity
         if isinstance(automation_entity, Observable):
             self._automation_entity.watch(self._on_change)
+        if entity_category is not None:
+            self._entity_category = entity_category
 
     def _on_change(self, _sender, _old_value, _new_value):
         """Notify HA of the change"""
