@@ -91,7 +91,7 @@ class GeckoEntity(GeckoEntityBase):
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
         automation_entity,
-        entity_category: Optional[Entity] = None,
+        entity_category: Optional[EntityCategory] = None,
     ):
         super().__init__(
             spaman,

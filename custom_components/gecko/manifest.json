@@ -9,5 +9,8 @@
   "config_flow": true,
   "codeowners": [
     "@gazoodle"
+  ],
+  "requirements": [
+    "geckolib==0.4.8"
   ]
 }
