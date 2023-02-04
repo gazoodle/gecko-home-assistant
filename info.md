@@ -44,7 +44,7 @@ Platform | Description
 [commits]: https://github.com/gazoodle/gecko-home-assistant/commits/master
 [hacs]: https://github.com/custom-components/hacs
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-[screenshotimg]: screenshot.png
+[screenshotimg]: https://github.com/gazoodle/gecko-home-assistant/blob/main/screenshot.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/gazoodle/gecko-home-assistant.svg?style=for-the-badge
