@@ -3,7 +3,6 @@ import logging
 import socket
 import uuid
 
-from geckolib import GeckoAsyncFacade
 from .spa_manager import GeckoSpaManager
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -15,8 +14,8 @@ from .const import (  # pylint: disable=unused-import
     CONF_SPA_NAME,
     CONF_CLIENT_ID,
     DOMAIN,
-    PLATFORMS,
     STARTUP_MESSAGE,
+    SHOW_PING_KEY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,7 +35,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._static_ip = None
         self._client_id = f"{uuid.uuid4()}"
         self._spaman = GeckoSpaManager(self._client_id, None, None)
-        # self._facade = GeckoAsyncFacade(self._client_id)
 
     def async_show_user_form(self):
         """Let the user provide an IP address, or indicate they want us to search for one"""
@@ -73,7 +71,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is None:
             _LOGGER.info("Choose scan or address")
-            # await self._facade.__aenter__()
             await self._spaman.__aenter__()
             # Clear errors
             self._errors = {}
@@ -167,8 +164,9 @@ class GeckoOptionsFlowHandler(config_entries.OptionsFlow):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(x, default=self.options.get(x, True)): bool
-                    for x in sorted(PLATFORMS)
+                    vol.Required(
+                        SHOW_PING_KEY, default=self.options.get(SHOW_PING_KEY, False)
+                    ): bool
                 }
             ),
         )

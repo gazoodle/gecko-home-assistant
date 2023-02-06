@@ -28,12 +28,7 @@
     "step": {
       "user": {
         "data": {
-          "climate": "Climate enabled",
-          "binary_sensor": "Binary sensor enabled",
-          "fan": "Fan enabled",
-          "sensor": "Sensor enabled",
-          "light": "Light enabled",
-          "switch": "Switch enabled"
+          "show_ping": "Show the ping sensor (will affect log file size)"
         }
       }
     }

@@ -31,6 +31,8 @@ CLIMATE = "climate"
 LIGHT = "light"
 PLATFORMS = [BINARY_SENSOR, BUTTON, FAN, SENSOR, SWITCH, CLIMATE, LIGHT]
 
+# Option keys
+SHOW_PING_KEY = "show_ping"
 
 # Configuration and options
 CONF_SPA_NAME = "spaname"

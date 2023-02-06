@@ -6,7 +6,7 @@ import logging
 
 from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent, GeckoConstants
 from homeassistant.config_entries import HomeAssistant, ConfigEntry
-from .const import PLATFORMS, SENSOR, BUTTON
+from .const import PLATFORMS, SENSOR, BUTTON, SHOW_PING_KEY
 from queue import Queue
 from typing import Optional
 
@@ -88,6 +88,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
     async def load_platforms(self) -> None:
         """Load the appropriate platforms"""
         assert self.hass is not None
+        assert self.entry is not None
 
         if self._can_use_facade:
             self.platforms = PLATFORMS
@@ -103,3 +104,9 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         """Reload the platforms"""
         await self.unload_platforms()
         await self.load_platforms()
+
+    @property
+    def show_ping_sensor(self) -> bool:
+        if SHOW_PING_KEY not in self.entry.options:
+            return False
+        return self.entry.options[SHOW_PING_KEY]

@@ -1,12 +1,16 @@
 """Sensor platform for Gecko."""
+import logging
+
 from datetime import datetime, timezone, timedelta
-from geckolib import GeckoReminderType
+from geckolib import GeckoReminderType, GeckoErrorSensor
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import EntityCategory
 from .const import DOMAIN, ICON
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
+
+_LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -17,7 +21,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
         sensors.append(
             GeckoSensor(spaman, entry, spaman.status_sensor, EntityCategory.DIAGNOSTIC)
         )
-    if spaman.ping_sensor is not None:
+    if spaman.show_ping_sensor and spaman.ping_sensor is not None:
         sensors.append(
             GeckoSensor(spaman, entry, spaman.ping_sensor, EntityCategory.DIAGNOSTIC)
         )
@@ -34,6 +38,7 @@ async def async_setup_entry(hass, entry, async_add_entities):
             sensors.append(GeckoSensor(spaman, entry, sensor))
         for reminder in spaman.facade.reminders_manager.reminders:
             sensors.append(GeckoReminderSensor(spaman, entry, reminder.type))
+        sensors.append(GeckoErrorTextSensor(spaman, entry, spaman.facade.error_sensor))
     async_add_entities(sensors)
 
 
@@ -121,3 +126,35 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
             return "Change Vision cartridge"
         else:
             return "Unknown"
+
+
+class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        config_entry: ConfigEntry,
+        error_sensor: GeckoErrorSensor,
+    ) -> None:
+        super().__init__(
+            spaman,
+            config_entry,
+            f"{spaman.unique_id}-ERR",
+            "Error(s)",
+            spaman.spa_name,
+        )
+        self._error_sensor = error_sensor
+        self._entity_category = EntityCategory.DIAGNOSTIC
+
+    @property
+    def native_value(self):
+        if self.spaman.facade is None:
+            return None
+        return self._error_sensor.state
+
+    @property
+    def native_unit_of_measurement(self):
+        return None
+
+    @property
+    def icon(self) -> str:
+        return "mdi:alert"
