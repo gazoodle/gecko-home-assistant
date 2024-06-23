@@ -1,5 +1,5 @@
 """Fan platform for Gecko."""
-from homeassistant.components.fan import SUPPORT_PRESET_MODE, FanEntity
+from homeassistant.components.fan import FanEntityFeature, FanEntity
 
 from .const import DOMAIN
 from .entity import GeckoEntity
@@ -38,7 +38,7 @@ class GeckoFan(GeckoEntity, FanEntity):
 
     @property
     def supported_features(self):
-        return SUPPORT_PRESET_MODE
+        return FanEntityFeature.PRESET_MODE
 
     @property
     def icon(self):

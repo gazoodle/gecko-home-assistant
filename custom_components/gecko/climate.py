@@ -3,9 +3,8 @@ import logging
 
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
-    HVAC_MODE_AUTO,
-    SUPPORT_PRESET_MODE,
-    SUPPORT_TARGET_TEMPERATURE,
+    ClimateEntityFeature,
+    HVACMode,
 )
 
 from .const import DOMAIN
@@ -38,7 +37,7 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
     @property
     def supported_features(self):
         """Return the list of supported features."""
-        features = SUPPORT_TARGET_TEMPERATURE | SUPPORT_PRESET_MODE
+        features = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.PRESET_MODE
 
         # if self._client.have_blower():
         #    features |= SUPPORT_FAN_MODE
@@ -52,11 +51,11 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
 
     @property
     def hvac_modes(self):
-        return [HVAC_MODE_AUTO]
+        return [HVACMode.AUTO]
 
     @property
     def hvac_mode(self):
-        return HVAC_MODE_AUTO
+        return HVACMode.AUTO
 
     def set_hvac_mode(self, _hvac_mode):
         pass
