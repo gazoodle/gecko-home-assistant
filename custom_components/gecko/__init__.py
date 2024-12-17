@@ -10,7 +10,7 @@ import uuid
 
 from .spa_manager import GeckoSpaManager
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core_config import Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
