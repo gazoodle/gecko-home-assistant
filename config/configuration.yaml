@@ -1,10 +1,17 @@
 # https://www.home-assistant.io/integrations/default_config/
-default_config:
+# For gecko development, we only need a small subset
+config:
+history:
+logbook:
+stream:
+
+# https://www.home-assistant.io/integrations/homeassistant/
+homeassistant:
+  debug: true
 
 # https://www.home-assistant.io/integrations/logger/
 logger:
-  default: error
+  default: info
   logs:
     custom_components.gecko: debug
     geckolib: info
-
