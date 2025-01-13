@@ -1,5 +1,6 @@
 """Switch platform for Gecko."""
-from homeassistant.components.light import LightEntity
+
+from homeassistant.components.light import LightEntity, ColorMode
 
 from .const import DOMAIN
 from .entity import GeckoEntity
@@ -16,6 +17,9 @@ async def async_setup_entry(hass, entry, async_add_entities):
 
 class GeckoLight(GeckoEntity, LightEntity):
     """Gecko light class."""
+
+    _attr_color_mode = ColorMode.ONOFF
+    _attr_supported_color_modes = {ColorMode.ONOFF}
 
     async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
         """Turn on the switch."""
