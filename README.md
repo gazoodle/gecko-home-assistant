@@ -7,6 +7,16 @@
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
+## Version History
+
+v0.1.12
+- Removed warnings about light color modes
+- Added French string table, thanks @claudegel
+- Fixed ConfigType, thanks @grahamcraqer
+- Use geckolib 0.4.16, it fixes some other HA warnings and issues
+- Use Fan modes correctly, thanks @sicarriere
+- Update docker container to use latest version from blueprint ... phew, that was 2 years of updates
+
 _Component to integrate with [Gecko Spas][gecko-ha]._
 
 **This component will set up the following platforms.**
