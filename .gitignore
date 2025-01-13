@@ -1,2 +1,19 @@
+# artifacts
 __pycache__
 SpaPackStruct.xml
+.pytest*
+*.egg-info
+*/build/*
+*/dist/*
+
+# misc
+.coverage
+.vscode
+coverage.xml
+
+# Home Assistant configuration
+config/*
+!config/configuration.yaml
+
+# OS Weirdness
+.DS_Store

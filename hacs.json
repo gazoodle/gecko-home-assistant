@@ -1,5 +1,8 @@
 {
     "name": "Gecko",
+    "hide_default_branch": true,
     "hacs": "0.24.0",
-    "homeassistant": "2023.1.1"
+    "homeassistant": "2023.3.0",
+    "render_readme": true
 }
+
