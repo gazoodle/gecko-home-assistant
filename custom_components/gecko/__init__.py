@@ -10,7 +10,8 @@ import uuid
 
 from .spa_manager import GeckoSpaManager
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import Config, HomeAssistant
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import (
@@ -25,7 +26,7 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup(_hass: HomeAssistant, _config: Config):
+async def async_setup(_hass: HomeAssistant, _config: ConfigType):
     """Set up this integration using YAML is not supported."""
     return True
 
