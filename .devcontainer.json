@@ -47,6 +47,8 @@
 		}
 	},
 	"runArgs": [
+		"-v",
+		"${env:HOME}${env:USERPROFILE}/.ssh:/tmp/.ssh",
 		"--mount",
 		"type=bind,source=/Users/gary/Documents/Source/geckolib/src/geckolib,target=/usr/local/lib/python3.13/site-packages/geckolib,readonly",
 		"--mount",
