@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import asyncio
 import logging
-
-from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent, GeckoConstants
-from homeassistant.config_entries import HomeAssistant, ConfigEntry
-from .const import PLATFORMS, SENSOR, BUTTON, SHOW_PING_KEY
 from queue import Queue
-from typing import Optional
+from typing import TYPE_CHECKING
+
+from geckolib import GeckoAsyncSpaMan, GeckoConstants, GeckoSpaEvent
+
+from .const import BUTTON, PLATFORMS, SENSOR, SHOW_PING_KEY
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -20,13 +24,14 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
     def __init__(
         self,
         client_id: str,
-        hass: Optional[HomeAssistant],
-        entry: Optional[ConfigEntry],
+        hass: HomeAssistant | None,
+        entry: ConfigEntry | None,
         **kwargs,
-    ):
+    ) -> None:
+        """Initialize the Spa Manager."""
         super().__init__(client_id, **kwargs)
-        self.hass: Optional[HomeAssistant] = hass
-        self.entry: Optional[ConfigEntry] = entry
+        self.hass: HomeAssistant | None = hass
+        self.entry: ConfigEntry | None = entry
 
         self._can_use_facade = False
 
@@ -34,6 +39,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         self._event_queue: Queue = Queue()
 
     async def __aenter__(self) -> GeckoSpaManager:
+        """Perform async enter."""
         await super().__aenter__()
         self.add_task(
             self._queue_loop(), "Home Assistant Gecko Spa Manager", "HASPAMAN"
@@ -73,21 +79,22 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         # because otherwise we end up trying to build platforms at the same time
         self._event_queue.put(event)
 
-    async def unload_platforms(self) -> None:
-        """Unload the platforms that were previously loaded"""
+    async def unload_platforms(self) -> bool:
+        """Unload the platforms that were previously loaded."""
         assert self.hass is not None
 
         if len(self.platforms) > 0:
             _LOGGER.debug("Unload platforms %s", self.platforms)
 
-            unloaded = await self.hass.config_entries.async_unload_platforms(
+            unloaded: bool = await self.hass.config_entries.async_unload_platforms(
                 self.entry, self.platforms
             )
             self.platforms = []
             return unloaded
+        return True
 
     async def load_platforms(self) -> None:
-        """Load the appropriate platforms"""
+        """Load the appropriate platforms."""
         assert self.hass is not None
         assert self.entry is not None
 
@@ -102,7 +109,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         )
 
     async def reload(self) -> None:
-        """Reload the platforms"""
+        """Reload the platforms."""
         await self.unload_platforms()
         await self.load_platforms()
 

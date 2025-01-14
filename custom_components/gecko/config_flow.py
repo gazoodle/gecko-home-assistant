@@ -1,4 +1,5 @@
 """Adds config flow for Gecko."""
+
 import logging
 import socket
 import uuid

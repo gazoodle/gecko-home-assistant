@@ -8,21 +8,20 @@ https://github.com/gazoodle/gecko-home-assistant
 import logging
 import uuid
 
-
-from .spa_manager import GeckoSpaManager
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.typing import ConfigType
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.typing import ConfigType
 
 from .const import (
+    CONF_CLIENT_ID,
     CONF_SPA_ADDRESS,
     CONF_SPA_IDENTIFIER,
-    CONF_CLIENT_ID,
     CONF_SPA_NAME,
     DOMAIN,
     STARTUP_MESSAGE,
 )
+from .spa_manager import GeckoSpaManager
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -108,8 +107,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unloaded
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
-    return True
