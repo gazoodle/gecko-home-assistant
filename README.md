@@ -1,13 +1,25 @@
-# gecko-home-assistant
+# Gecko Home Assistant
+
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
+
 [![License][license-shield]](LICENSE)
 
 [![hacs][hacsbadge]][hacs]
 ![Project Maintenance][maintenance-shield]
 
+![installation_badge](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.gecko.total)
+![Validate](https://github.com/gazoodle/gecko-home-assistant/actions/workflows/validate.yml/badge.svg)
+
+
 ## Version History
+
+v0.1.14
+- Get validation workflow running
+
+v0.1.13
+- Bump the version number!
 
 v0.1.12
 - Removed warnings about light color modes
@@ -17,7 +29,7 @@ v0.1.12
 - Use Fan modes correctly, thanks @sicarriere
 - Update docker container to use latest version from blueprint ... phew, that was 2 years of updates
 
-_Component to integrate with [Gecko Spas][gecko-ha]._
+_Component to integrate with [Gecko Spas](https://geckoalliance.com)._
 
 **This component will set up the following platforms.**
 
