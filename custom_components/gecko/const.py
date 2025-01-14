@@ -1,7 +1,8 @@
 """Constants for Gecko."""
 
-import pathlib
 import json
+import pathlib
+
 from geckolib import VERSION as GECKOLIB_VERSION
 
 # Base component constants, some loaded directly from the manifest

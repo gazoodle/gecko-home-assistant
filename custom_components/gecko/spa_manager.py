@@ -9,7 +9,17 @@ from typing import TYPE_CHECKING
 
 from geckolib import GeckoAsyncSpaMan, GeckoConstants, GeckoSpaEvent
 
-from .const import BUTTON, PLATFORMS, SENSOR, SHOW_PING_KEY
+from .const import (
+    BINARY_SENSOR,
+    BUTTON,
+    CLIMATE,
+    FAN,
+    LIGHT,
+    PLATFORMS,
+    SENSOR,
+    SHOW_PING_KEY,
+    SWITCH,
+)
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -60,6 +70,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
                 event = self._event_queue.get()
                 if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
                     # Wait for a single update so we have reminders and watercare
+                    assert self.facade is not None
                     await self.facade.wait_for_one_update()
                     self._can_use_facade = True
                     await self.reload()

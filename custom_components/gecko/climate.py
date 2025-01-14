@@ -1,8 +1,9 @@
 """Climate platform for Gecko."""
 
 import logging
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
+from geckolib import GeckoAsyncFacade, GeckoWaterCare, GeckoWaterHeater
 from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.climate.const import (
     ClimateEntityFeature,
@@ -14,9 +15,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .entity import GeckoEntity
-
-if TYPE_CHECKING:
-    from .spa_manager import GeckoSpaManager
+from .spa_manager import GeckoSpaManager
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,22 +25,30 @@ async def async_setup_entry(
 ) -> None:
     """Set up climate platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities(
-        [
-            GeckoClimate(
-                spaman,
-                entry,
-                spaman.facade.water_heater,  # type: ignore
-                spaman.facade.water_care,  # type: ignore
-            )
-        ]
-    )
+    if spaman.facade is not None:
+        facade: GeckoAsyncFacade = spaman.facade
+        async_add_entities(
+            [
+                GeckoClimate(
+                    spaman,
+                    entry,
+                    facade.water_heater,
+                    facade.water_care,
+                )
+            ]
+        )
 
 
 class GeckoClimate(GeckoEntity, ClimateEntity):
     """Gecko Climate class."""
 
-    def __init__(self, spaman, config_entry, automation_entity, water_care) -> None:
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        config_entry: ConfigEntry,
+        automation_entity: GeckoWaterHeater,
+        water_care: GeckoWaterCare,
+    ) -> None:
         """Initialize Gecko climate entity."""
         self._attr_hvac_modes = [HVACMode.AUTO]
         self._attr_hvac_mode = HVACMode.AUTO

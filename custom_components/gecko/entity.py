@@ -1,15 +1,16 @@
-"""GeckoEntity class"""
+"""GeckoEntity class."""
 
 import logging
+from typing import Any
 
-from typing import Optional
-from geckolib import Observable
-from .spa_manager import GeckoSpaManager
-from homeassistant.helpers.entity import Entity, EntityCategory
+from geckolib import GeckoAutomationBase, Observable
 from homeassistant.config_entries import ConfigEntry
-
+from homeassistant.const import EntityCategory
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import Entity
 
 from .const import DOMAIN
+from .spa_manager import GeckoSpaManager
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +26,7 @@ class GeckoEntityBase(Entity):
         name: str,
         parent_name: str,
     ) -> None:
+        """Initialize the entity class."""
         self.spaman = spaman
         self.config_entry = config_entry
         self._unique_id = unique_id
@@ -44,13 +46,12 @@ class GeckoEntityBase(Entity):
         return f"{self._parent_name}: {self._name}"
 
     @property
-    def device_info(self):
+    def device_info(self) -> DeviceInfo | None:
         """Get device information."""
-        info = {
-            "identifiers": {(DOMAIN, self.spaman.unique_id)},
-            "name": self.spaman.spa_name,
-            "manufacturer": "Gecko Alliance",
-        }
+        info = DeviceInfo()
+        info["identifiers"] = {(DOMAIN, self.spaman.unique_id)}
+        info["name"] = self.spaman.spa_name
+        info["manufacturer"] = "Gecko Alliance"
         if self.spaman.facade is not None:
             info["model"] = (
                 f"{self.spaman.facade.spa.pack} {self.spaman.facade.spa.version}"
@@ -93,7 +94,7 @@ class GeckoEntity(GeckoEntityBase):
         self,
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
-        automation_entity,
+        automation_entity: GeckoAutomationBase,
         entity_category: EntityCategory | None = None,
     ):
         """Initialize a gecko entity."""
@@ -110,7 +111,7 @@ class GeckoEntity(GeckoEntityBase):
         if entity_category is not None:
             self._entity_category = entity_category
 
-    def _on_change(self, _sender, _old_value, _new_value) -> None:
+    def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
         """Notify HA of the change."""
         if self.hass is not None:
             self.async_schedule_update_ha_state(force_refresh=True)

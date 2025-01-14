@@ -73,7 +73,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     spaman = GeckoSpaManager(
-        client_id,  # type: ignore
+        client_id,
         hass,
         entry,
         spa_identifier=spa_identifier,
@@ -89,6 +89,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         )
         raise ConfigEntryNotReady
 
+    _LOGGER.debug("Facade acquired, go for platform load")
     hass.data[DOMAIN][entry.entry_id] = spaman
 
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

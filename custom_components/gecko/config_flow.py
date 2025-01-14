@@ -3,10 +3,11 @@
 import logging
 import socket
 import uuid
+from typing import Any
 
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.config_entries import ConfigFlowResult
+from homeassistant.config_entries import ConfigEntry, ConfigFlowResult
 from homeassistant.core import callback
 
 from .const import (  # pylint: disable=unused-import
@@ -29,8 +30,8 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 2
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_PUSH
 
-    def __init__(self):
-        """Initialize."""
+    def __init__(self) -> None:
+        """Initialize the flow handler class."""
         _LOGGER.info(STARTUP_MESSAGE)
 
         self._errors = {}
@@ -39,7 +40,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._spaman = GeckoSpaManager(self._client_id, None, None)
 
     def async_show_user_form(self) -> ConfigFlowResult:
-        """Let the user provide an IP address, or indicate they want to search for one."""
+        """Let the user provide an IP address, or indicate they want to search."""
         data_schema = {
             vol.Optional(
                 CONF_SPA_ADDRESS,
@@ -68,7 +69,9 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Ask user to take next step."""
         _LOGGER.debug("async_step_user user_input = %s", user_input)
 
@@ -115,7 +118,9 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self._errors = {}
         return self.async_show_select_form()
 
-    async def async_step_pick(self, user_input=None) -> ConfigFlowResult:
+    async def async_step_pick(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """After user has picked a spa."""
         _LOGGER.info("Async step user has picked {%s}", user_input)
 
@@ -141,7 +146,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry) -> config_entries.OptionsFlow:
+    def async_get_options_flow(config_entry: ConfigEntry) -> config_entries.OptionsFlow:
         """Get options flow implementation class."""
         return GeckoOptionsFlowHandler(config_entry)
 
@@ -149,16 +154,21 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 class GeckoOptionsFlowHandler(config_entries.OptionsFlow):
     """Gecko config flow options handler."""
 
-    def __init__(self, config_entry) -> None:
+    def __init__(self, config_entry: ConfigEntry) -> None:
         """Initialize options flow."""
         self.config_entry = config_entry
         self.options = dict(config_entry.options)
 
-    async def async_step_init(self, user_input=None) -> ConfigFlowResult:
+    async def async_step_init(
+        self,
+        user_input: dict[str, Any] | None = None,  # noqa: ARG002
+    ) -> ConfigFlowResult:
         """Manage the options."""
         return await self.async_step_user()
 
-    async def async_step_user(self, user_input=None) -> ConfigFlowResult:
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
         """Handle a flow initialized by the user."""
         if user_input is not None:
             self.options.update(user_input)

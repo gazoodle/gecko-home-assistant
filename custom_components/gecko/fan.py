@@ -1,13 +1,22 @@
 """Fan platform for Gecko."""
 
-from homeassistant.components.fan import FanEntityFeature, FanEntity
+from typing import TYPE_CHECKING
+
+from homeassistant.components.fan import FanEntity, FanEntityFeature
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .entity import GeckoEntity
-from .spa_manager import GeckoSpaManager
+
+if TYPE_CHECKING:
+    from .spa_manager import GeckoSpaManager
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
     """Set up fan platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([GeckoFan(spaman, entry, pump) for pump in spaman.facade.pumps])

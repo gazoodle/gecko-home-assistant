@@ -1,5 +1,6 @@
 """Binary sensor platform for Gecko."""
 
+import logging
 from typing import TYPE_CHECKING
 
 from homeassistant.components.binary_sensor import BinarySensorEntity
@@ -13,16 +14,20 @@ from .entity import GeckoEntity
 if TYPE_CHECKING:
     from .spa_manager import GeckoSpaManager
 
+_LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
     """Set up binary_sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
+    _LOGGER.debug("Load binary sensor platform")
+    assert spaman.facade is not None
     async_add_entities(
         [
             GeckoBinarySensor(spaman, entry, sensor)
-            for sensor in spaman.facade.binary_sensors  # type: ignore
+            for sensor in spaman.facade.binary_sensors
         ]
     )
 
