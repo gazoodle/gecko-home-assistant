@@ -30,7 +30,7 @@ class GeckoEntityBase(Entity):
         self._unique_id = unique_id
         self._name = name
         self._parent_name = parent_name
-        self._entity_category = None
+        self._entity_category: str | None = None
         _LOGGER.info("Setup entity %r", self)
 
     @property
@@ -39,12 +39,13 @@ class GeckoEntityBase(Entity):
         return self._unique_id
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Return the name of the entity."""
         return f"{self._parent_name}: {self._name}"
 
     @property
     def device_info(self):
+        """Get device information."""
         info = {
             "identifiers": {(DOMAIN, self.spaman.unique_id)},
             "name": self.spaman.spa_name,
@@ -66,34 +67,36 @@ class GeckoEntityBase(Entity):
         return info
 
     @property
-    def entity_category(self):
-        """Return the entity category"""
+    def entity_category(self) -> str | None:
+        """Return the entity category."""
         return self._entity_category
 
     @property
-    def extra_state_attributes(self):
+    def extra_state_attributes(self) -> str | None:
         """Return the extra state attributes."""
         return None
 
     @property
     def should_poll(self) -> bool:
-        """Return false as we're a push model!"""
+        """Return false as we're a push model."""
         return False
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return a unique name."""
         return f"{self._name}/{self._unique_id}"
 
 
 class GeckoEntity(GeckoEntityBase):
-    """Entity base of Gecko items"""
+    """Entity base of Gecko items."""
 
     def __init__(
         self,
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
         automation_entity,
-        entity_category: Optional[EntityCategory] = None,
+        entity_category: EntityCategory | None = None,
     ):
+        """Initialize a gecko entity."""
         super().__init__(
             spaman,
             config_entry,
@@ -107,7 +110,7 @@ class GeckoEntity(GeckoEntityBase):
         if entity_category is not None:
             self._entity_category = entity_category
 
-    def _on_change(self, _sender, _old_value, _new_value):
-        """Notify HA of the change"""
+    def _on_change(self, _sender, _old_value, _new_value) -> None:
+        """Notify HA of the change."""
         if self.hass is not None:
             self.async_schedule_update_ha_state(force_refresh=True)

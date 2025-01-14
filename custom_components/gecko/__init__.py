@@ -73,7 +73,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
 
     spaman = GeckoSpaManager(
-        client_id,
+        client_id,  # type: ignore
         hass,
         entry,
         spa_identifier=spa_identifier,
