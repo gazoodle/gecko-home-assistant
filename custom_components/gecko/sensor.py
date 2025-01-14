@@ -1,14 +1,14 @@
 """Sensor platform for Gecko."""
 
 import logging
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from geckolib import GeckoErrorSensor, GeckoReminderType
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
@@ -120,20 +120,20 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         return "mdi:reminder"
 
     @staticmethod
-    def type_to_name(type: GeckoReminderType) -> str:  # noqa: PLR0911
+    def type_to_name(thetype: GeckoReminderType) -> str:  # noqa: PLR0911
         """Convert type to name."""
         # This should go via strings.json at some point
-        if type == GeckoReminderType.RINSE_FILTER:
+        if thetype == GeckoReminderType.RINSE_FILTER:
             return "Rinse filter"
-        if type == GeckoReminderType.CLEAN_FILTER:
+        if thetype == GeckoReminderType.CLEAN_FILTER:
             return "Clean filter"
-        if type == GeckoReminderType.CHANGE_WATER:
+        if thetype == GeckoReminderType.CHANGE_WATER:
             return "Change water"
-        if type == GeckoReminderType.CHECK_SPA:
+        if thetype == GeckoReminderType.CHECK_SPA:
             return "Check Spa"
-        if type == GeckoReminderType.CHANGE_OZONATOR:
+        if thetype == GeckoReminderType.CHANGE_OZONATOR:
             return "Change Ozonator"
-        if type == GeckoReminderType.CHANGE_VISION_CARTRIDGE:
+        if thetype == GeckoReminderType.CHANGE_VISION_CARTRIDGE:
             return "Change Vision cartridge"
         return "Unknown"
 
@@ -166,7 +166,7 @@ class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
         return self._error_sensor.state
 
     @property
-    def native_unit_of_measurement(self) -> Str | None:
+    def native_unit_of_measurement(self) -> str | None:
         """Get unit of measurement."""
         return None
 

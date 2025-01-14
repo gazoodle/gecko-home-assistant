@@ -68,12 +68,12 @@ class GeckoFan(GeckoEntity, FanEntity):
     @property
     def preset_modes(self) -> list[str]:
         """Get preset modes."""
-        return self._automation_entity._user_demand["options"]
+        return self._automation_entity._user_demand["options"]  # noqa: SLF001
 
     @property
     def preset_mode(self) -> str:
         """Get current preset mode."""
-        mode = self._automation_entity._state_sensor.state
+        mode = self._automation_entity._state_sensor.state  # noqa: SLF001
 
         if mode != "OFF":
             return mode[0:2]
