@@ -1,6 +1,6 @@
 """Fan platform for Gecko."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
@@ -19,7 +19,10 @@ async def async_setup_entry(
 ) -> None:
     """Set up fan platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([GeckoFan(spaman, entry, pump) for pump in spaman.facade.pumps])
+    if spaman.facade is not None:
+        async_add_entities(
+            [GeckoFan(spaman, entry, pump) for pump in spaman.facade.pumps]
+        )
 
 
 class GeckoFan(GeckoEntity, FanEntity):
@@ -27,10 +30,10 @@ class GeckoFan(GeckoEntity, FanEntity):
 
     async def async_turn_on(
         self,
-        _speed=None,
-        _percentage=None,
-        _preset_mode=None,
-        **_kwargs,
+        _speed: str | None = None,
+        _percentage: int | None = None,
+        _preset_mode: int | None = None,
+        **_kwargs: Any,
     ) -> None:
         """Turn on the switch."""
         await self._automation_entity.async_set_mode("HI")
@@ -40,14 +43,17 @@ class GeckoFan(GeckoEntity, FanEntity):
         await self._automation_entity.async_set_mode("OFF")
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
+        """Set the fan preset mode."""
         await self._automation_entity.async_set_mode(preset_mode)
 
     @property
-    def is_on(self):
+    def is_on(self) -> bool:
+        """Get the fan on/off state."""
         return self.preset_mode != "OFF"
 
     @property
-    def supported_features(self):
+    def supported_features(self) -> FanEntityFeature:
+        """Get fan supported features."""
         return (
             FanEntityFeature.PRESET_MODE
             | FanEntityFeature.TURN_ON
@@ -55,16 +61,18 @@ class GeckoFan(GeckoEntity, FanEntity):
         )
 
     @property
-    def icon(self):
+    def icon(self) -> str:
         """Return the icon of this switch."""
         return "mdi:pump"
 
     @property
-    def preset_modes(self):
+    def preset_modes(self) -> list[str]:
+        """Get preset modes."""
         return self._automation_entity._user_demand["options"]
 
     @property
-    def preset_mode(self):
+    def preset_mode(self) -> str:
+        """Get current preset mode."""
         mode = self._automation_entity._state_sensor.state
 
         if mode != "OFF":

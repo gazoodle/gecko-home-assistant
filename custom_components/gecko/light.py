@@ -2,6 +2,7 @@
 
 from typing import TYPE_CHECKING, Any
 
+from geckolib import GeckoAutomationFacadeBase
 from homeassistant.components.light import LightEntity
 from homeassistant.components.light.const import ColorMode
 from homeassistant.config_entries import ConfigEntry
@@ -29,14 +30,22 @@ async def async_setup_entry(
 class GeckoLight(GeckoEntity, LightEntity):
     """Gecko light class."""
 
-    _attr_color_mode = ColorMode.ONOFF
-    _attr_supported_color_modes = {ColorMode.ONOFF}
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        entry: ConfigEntry,
+        light: GeckoAutomationFacadeBase,
+    ) -> None:
+        """Initialize the light."""
+        super().__init__(spaman, entry, light)
+        self._attr_color_mode = ColorMode.ONOFF
+        self._attr_supported_color_modes = {ColorMode.ONOFF}
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn on the switch."""
         self._automation_entity.turn_on()
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn off the switch."""
         self._automation_entity.turn_off()
 

@@ -1,24 +1,19 @@
-"""GeckoSpaManager class manages the interactions between geckolib and HA"""
+"""GeckoSpaManager class manages the interactions between geckolib and HA."""
 
 from __future__ import annotations
 
 import asyncio
 import logging
 from queue import Queue
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Self
 
 from geckolib import GeckoAsyncSpaMan, GeckoConstants, GeckoSpaEvent
 
 from .const import (
-    BINARY_SENSOR,
     BUTTON,
-    CLIMATE,
-    FAN,
-    LIGHT,
     PLATFORMS,
     SENSOR,
     SHOW_PING_KEY,
-    SWITCH,
 )
 
 if TYPE_CHECKING:
@@ -36,7 +31,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         client_id: str,
         hass: HomeAssistant | None,
         entry: ConfigEntry | None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """Initialize the Spa Manager."""
         super().__init__(client_id, **kwargs)
@@ -48,7 +43,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         self.platforms = []
         self._event_queue: Queue = Queue()
 
-    async def __aenter__(self) -> GeckoSpaManager:
+    async def __aenter__(self) -> Self:
         """Perform async enter."""
         await super().__aenter__()
         self.add_task(
@@ -70,7 +65,6 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
                 event = self._event_queue.get()
                 if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
                     # Wait for a single update so we have reminders and watercare
-                    assert self.facade is not None
                     await self.facade.wait_for_one_update()
                     self._can_use_facade = True
                     await self.reload()
@@ -82,7 +76,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
             finally:
                 await asyncio.sleep(GeckoConstants.ASYNCIO_SLEEP_TIMEOUT_FOR_YIELD)
 
-    async def handle_event(self, event: GeckoSpaEvent, **kwargs) -> None:
+    async def handle_event(self, event: GeckoSpaEvent, **_kwargs: Any) -> None:
         """Handle spa manager events."""
         _LOGGER.debug("Event: %s, state %s", event, self.spa_state)
         # The Geckolib spa manager issues events as they happen, and sometimes
@@ -106,9 +100,6 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     async def load_platforms(self) -> None:
         """Load the appropriate platforms."""
-        assert self.hass is not None
-        assert self.entry is not None
-
         if self._can_use_facade:
             self.platforms = PLATFORMS
         else:
@@ -126,6 +117,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     @property
     def show_ping_sensor(self) -> bool:
+        """Show the ping sensor property."""
         if SHOW_PING_KEY not in self.entry.options:
             return False
         return self.entry.options[SHOW_PING_KEY]

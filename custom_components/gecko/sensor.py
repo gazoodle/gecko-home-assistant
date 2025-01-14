@@ -1,7 +1,7 @@
 """Sensor platform for Gecko."""
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
 from geckolib import GeckoErrorSensor, GeckoReminderType
@@ -11,7 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, ICON
+from .const import DOMAIN
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
 
@@ -41,10 +41,13 @@ async def async_setup_entry(
             GeckoSensor(spaman, entry, spaman.channel_sensor, EntityCategory.DIAGNOSTIC)
         )
     if spaman.can_use_facade and spaman.facade is not None:
-        for sensor in spaman.facade.sensors:
-            sensors.append(GeckoSensor(spaman, entry, sensor))
-        for reminder in spaman.facade.reminders_manager.reminders:
-            sensors.append(GeckoReminderSensor(spaman, entry, reminder.type))
+        sensors.extend(
+            GeckoSensor(spaman, entry, sensor) for sensor in spaman.facade.sensors
+        )
+        sensors.extend(
+            GeckoReminderSensor(spaman, entry, reminder.type)
+            for reminder in spaman.facade.reminders_manager.reminders
+        )
         sensors.append(GeckoErrorTextSensor(spaman, entry, spaman.facade.error_sensor))
     async_add_entities(sensors)
 
@@ -58,23 +61,26 @@ class GeckoSensor(GeckoEntity, SensorEntity):
         return self._automation_entity.state
 
     @property
-    def native_unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> str:
         """Return the unit of measurement."""
         return self._automation_entity.unit_of_measurement
 
     @property
-    def device_class(self):
+    def device_class(self) -> str:
         """Return the device class of the sensor."""
         return self._automation_entity.device_class
 
 
 class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
+    """Gecko reminder sensor class."""
+
     def __init__(
         self,
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
         reminder_type: GeckoReminderType,
     ) -> None:
+        """Initialize the reminder sensor."""
         super().__init__(
             spaman,
             config_entry,
@@ -85,7 +91,8 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         self._reminder_type = reminder_type
 
     @property
-    def native_value(self):
+    def native_value(self) -> datetime | None:
+        """Get the sensor native value."""
         if self.spaman.facade is None:
             return None
         reminder = self.spaman.facade.reminders_manager.get_reminder(
@@ -93,26 +100,30 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         )
         if reminder is None:
             return None
-        today = datetime.utcnow().date()
+        today = datetime.now(tz=UTC).date()
         midnight = datetime(
             today.year, today.month, today.day, 0, 0, 0, 0, timezone.utc
         )
         return midnight + timedelta(reminder.days)
 
     @property
-    def native_unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> str | None:
+        """Get native unit of measurement."""
         return None
 
     @property
     def device_class(self) -> str:
+        """Get device class."""
         return "timestamp"
 
     @property
     def icon(self) -> str:
+        """Get icon."""
         return "mdi:reminder"
 
     @staticmethod
     def type_to_name(type: GeckoReminderType) -> str:
+        """Convert type to name."""
         # This should go via strings.json at some point
         if type == GeckoReminderType.RINSE_FILTER:
             return "Rinse filter"
@@ -130,12 +141,15 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
 
 
 class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
+    """Gecko text error sensor class."""
+
     def __init__(
         self,
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
         error_sensor: GeckoErrorSensor,
     ) -> None:
+        """Initialize the error text sensor."""
         super().__init__(
             spaman,
             config_entry,
@@ -147,15 +161,18 @@ class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
         self._entity_category = EntityCategory.DIAGNOSTIC
 
     @property
-    def native_value(self):
+    def native_value(self) -> str | None:
+        """Get native value."""
         if self.spaman.facade is None:
             return None
         return self._error_sensor.state
 
     @property
-    def native_unit_of_measurement(self):
+    def native_unit_of_measurement(self) -> Str | None:
+        """Get unit of measurement."""
         return None
 
     @property
     def icon(self) -> str:
+        """Get icon."""
         return "mdi:alert"

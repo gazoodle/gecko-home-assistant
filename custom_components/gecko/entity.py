@@ -96,7 +96,7 @@ class GeckoEntity(GeckoEntityBase):
         config_entry: ConfigEntry,
         automation_entity: GeckoAutomationBase,
         entity_category: EntityCategory | None = None,
-    ):
+    ) -> None:
         """Initialize a gecko entity."""
         super().__init__(
             spaman,

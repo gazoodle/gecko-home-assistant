@@ -90,13 +90,17 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             # Check that this is an IP address, or at least can be interpreted as one
             try:
                 socket.inet_aton(user_addr)
-            except socket.error:
+            except OSError:
                 self._errors["base"] = "not_ip"
                 return self.async_show_user_form()
 
             # And that there is a spa there to connect to ...
             await self._spaman.async_set_spa_info(user_addr, None, None)
             await self._spaman.wait_for_descriptors()
+
+            if self._spaman.spa_descriptors is None:
+                self._errors["base"] = "no_spa"
+                return self.async_show_user_form()
 
             if len(self._spaman.spa_descriptors) == 0:
                 self._errors["base"] = "no_spa"
@@ -109,6 +113,11 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         _LOGGER.info("No address provided, so wait for scan to complete...")
         await self._spaman.wait_for_descriptors()
         _LOGGER.info("Scan is complete")
+
+        if self._spaman.spa_descriptors is None:
+            # There are no spas found on your network
+            _LOGGER.warning("No spas found on the local network")
+            return self.async_abort(reason="no_spas")
 
         if len(self._spaman.spa_descriptors) == 0:
             # There are no spas found on your network
