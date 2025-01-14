@@ -11,6 +11,7 @@
 
 ![installation_badge](https://img.shields.io/badge/dynamic/json?color=41BDF5&logo=home-assistant&label=integration%20usage&suffix=%20installs&cacheSeconds=15600&url=https://analytics.home-assistant.io/custom_integrations.json&query=$.gecko.total)
 ![Validate](https://github.com/gazoodle/gecko-home-assistant/actions/workflows/validate.yml/badge.svg)
+![Lint](https://github.com/gazoodle/gecko-home-assistant/actions/workflows/lint.yml/badge.svg)
 
 
 ## Version History
@@ -49,9 +50,7 @@ Platform | Description
 
 ## Installation (HACS)
 
-The preferred method to install is to use HACS. This repo should be available in the default list, but
-this is currently in progress, so you might need to add https://github.com/gazoodle/gecko-home-assistant
-as a custom repo. See https://hacs.xyz/docs/faq/custom_repositories for details.
+The preferred method to install is to use HACS.
 
 ## Installation (No HACS)
 
