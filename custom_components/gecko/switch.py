@@ -32,11 +32,11 @@ async def async_setup_entry(
 class GeckoBinarySwitch(GeckoEntity, SwitchEntity):
     """Gecko switch class."""
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn on the switch."""
         self._automation_entity.turn_on()
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn off the switch."""
         self._automation_entity.turn_off()
 

@@ -1,6 +1,6 @@
 """Switch platform for Gecko."""
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from geckolib import GeckoAutomationFacadeBase
 from homeassistant.components.light import LightEntity
@@ -11,9 +11,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
 from .entity import GeckoEntity
-
-if TYPE_CHECKING:
-    from .spa_manager import GeckoSpaManager
+from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(

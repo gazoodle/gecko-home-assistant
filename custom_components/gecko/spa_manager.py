@@ -86,8 +86,6 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     async def unload_platforms(self) -> bool:
         """Unload the platforms that were previously loaded."""
-        assert self.hass is not None
-
         if len(self.platforms) > 0:
             _LOGGER.debug("Unload platforms %s", self.platforms)
 

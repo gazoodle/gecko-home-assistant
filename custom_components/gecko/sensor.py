@@ -101,9 +101,7 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         if reminder is None:
             return None
         today = datetime.now(tz=UTC).date()
-        midnight = datetime(
-            today.year, today.month, today.day, 0, 0, 0, 0, timezone.utc
-        )
+        midnight = datetime(today.year, today.month, today.day, 0, 0, 0, 0, UTC)
         return midnight + timedelta(reminder.days)
 
     @property
@@ -122,7 +120,7 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         return "mdi:reminder"
 
     @staticmethod
-    def type_to_name(type: GeckoReminderType) -> str:
+    def type_to_name(type: GeckoReminderType) -> str:  # noqa: PLR0911
         """Convert type to name."""
         # This should go via strings.json at some point
         if type == GeckoReminderType.RINSE_FILTER:

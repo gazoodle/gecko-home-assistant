@@ -38,7 +38,7 @@ class GeckoFan(GeckoEntity, FanEntity):
         """Turn on the switch."""
         await self._automation_entity.async_set_mode("HI")
 
-    async def async_turn_off(self, **_kwargs) -> None:
+    async def async_turn_off(self, **_kwarg: Any) -> None:
         """Turn off the switch."""
         await self._automation_entity.async_set_mode("OFF")
 

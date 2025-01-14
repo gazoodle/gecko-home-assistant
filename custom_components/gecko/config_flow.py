@@ -69,6 +69,30 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
+    async def _async_step_with_address(self, user_addr: str) -> ConfigFlowResult:
+        # Check that this is an IP address, or at least can be interpreted as one
+        try:
+            socket.inet_aton(user_addr)
+        except OSError:
+            self._errors["base"] = "not_ip"
+            return self.async_show_user_form()
+
+        # And that there is a spa there to connect to ...
+        await self._spaman.async_set_spa_info(user_addr, None, None)
+        await self._spaman.wait_for_descriptors()
+
+        if self._spaman.spa_descriptors is None:
+            self._errors["base"] = "no_spa"
+            return self.async_show_user_form()
+
+        if len(self._spaman.spa_descriptors) == 0:
+            self._errors["base"] = "no_spa"
+            return self.async_show_user_form()
+
+        self._static_ip = user_addr
+        self._errors = {}
+        return self.async_show_select_form()
+
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -86,29 +110,7 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         if CONF_SPA_ADDRESS in user_input:
             user_addr = user_input[CONF_SPA_ADDRESS]
             _LOGGER.info("User provided address '%s'", user_addr)
-
-            # Check that this is an IP address, or at least can be interpreted as one
-            try:
-                socket.inet_aton(user_addr)
-            except OSError:
-                self._errors["base"] = "not_ip"
-                return self.async_show_user_form()
-
-            # And that there is a spa there to connect to ...
-            await self._spaman.async_set_spa_info(user_addr, None, None)
-            await self._spaman.wait_for_descriptors()
-
-            if self._spaman.spa_descriptors is None:
-                self._errors["base"] = "no_spa"
-                return self.async_show_user_form()
-
-            if len(self._spaman.spa_descriptors) == 0:
-                self._errors["base"] = "no_spa"
-                return self.async_show_user_form()
-
-            self._static_ip = user_addr
-            self._errors = {}
-            return self.async_show_select_form()
+            return await self._async_step_with_address(user_addr)
 
         _LOGGER.info("No address provided, so wait for scan to complete...")
         await self._spaman.wait_for_descriptors()
