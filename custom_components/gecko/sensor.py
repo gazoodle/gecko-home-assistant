@@ -1,4 +1,5 @@
 """Sensor platform for Gecko."""
+
 import logging
 
 from datetime import datetime, timezone, timedelta
@@ -14,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform."""
+    """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     sensors = []
     if spaman.status_sensor is not None:

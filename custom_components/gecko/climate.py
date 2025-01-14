@@ -1,4 +1,5 @@
 """Climate platform for Gecko."""
+
 import logging
 
 from homeassistant.components.climate import ClimateEntity
@@ -15,7 +16,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup climate platform."""
+    """Set up climate platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         [
@@ -37,7 +38,9 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
     @property
     def supported_features(self):
         """Return the list of supported features."""
-        features = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.PRESET_MODE
+        features = (
+            ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.PRESET_MODE
+        )
 
         # if self._client.have_blower():
         #    features |= SUPPORT_FAN_MODE

@@ -4,6 +4,7 @@ Custom integration to integrate Gecko Alliance spa with Home Assistant.
 For more details about this integration, please refer to
 https://github.com/gazoodle/gecko-home-assistant
 """
+
 import logging
 import uuid
 
@@ -26,12 +27,12 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup(_hass: HomeAssistant, _config: ConfigType):
+async def async_setup(_hass: HomeAssistant, _config: ConfigType) -> bool:
     """Set up this integration using YAML is not supported."""
     return True
 
 
-async def async_migrate_entry(hass, config_entry: ConfigEntry):
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", config_entry.version)
 
@@ -47,7 +48,7 @@ async def async_migrate_entry(hass, config_entry: ConfigEntry):
     return True
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up this integration using UI."""
     if hass.data.get(DOMAIN) is None:
         hass.data.setdefault(DOMAIN, {})
@@ -95,7 +96,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Handle removal of an entry."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     unloaded = await spaman.unload_platforms()
@@ -107,7 +108,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     return unloaded
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry):
+async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Reload config entry."""
     await async_unload_entry(hass, entry)
     await async_setup_entry(hass, entry)
+    return True

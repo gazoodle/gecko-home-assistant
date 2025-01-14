@@ -17,7 +17,7 @@
 ## Version History
 
 v0.1.14
-- Get validation workflow running
+- Get validation & lint workflows running
 
 v0.1.13
 - Bump the version number!

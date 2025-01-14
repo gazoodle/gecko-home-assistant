@@ -1,13 +1,18 @@
 """Binary sensor platform for Gecko."""
+
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 from .entity import GeckoEntity
 from .spa_manager import GeckoSpaManager
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup binary_sensor platform."""
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities
+) -> None:
+    """Set up binary_sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         [

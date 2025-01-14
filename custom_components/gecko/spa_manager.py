@@ -1,4 +1,5 @@
 """GeckoSpaManager class manages the interactions between geckolib and HA"""
+
 from __future__ import annotations
 
 import asyncio
@@ -14,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GeckoSpaManager(GeckoAsyncSpaMan):
-    """HA Gecko Spa Manager"""
+    """HA Gecko Spa Manager."""
 
     def __init__(
         self,

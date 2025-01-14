@@ -8,7 +8,7 @@ from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup fan platform."""
+    """Set up fan platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([GeckoFan(spaman, entry, pump) for pump in spaman.facade.pumps])
 

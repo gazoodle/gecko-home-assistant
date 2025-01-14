@@ -8,7 +8,7 @@ from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform."""
+    """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     async_add_entities(
         [GeckoLight(spaman, entry, light) for light in spaman.facade.lights]
@@ -21,11 +21,11 @@ class GeckoLight(GeckoEntity, LightEntity):
     _attr_color_mode = ColorMode.ONOFF
     _attr_supported_color_modes = {ColorMode.ONOFF}
 
-    async def async_turn_on(self, **kwargs):  # pylint: disable=unused-argument
+    async def async_turn_on(self, **kwargs) -> None:
         """Turn on the switch."""
         self._automation_entity.turn_on()
 
-    async def async_turn_off(self, **kwargs):  # pylint: disable=unused-argument
+    async def async_turn_off(self, **kwargs) -> None:
         """Turn off the switch."""
         self._automation_entity.turn_off()
 

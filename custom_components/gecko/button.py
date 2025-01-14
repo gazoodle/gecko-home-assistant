@@ -1,4 +1,5 @@
 """Button platform for Gecko."""
+
 from homeassistant.components.button import ButtonEntity
 from homeassistant.helpers.entity import EntityCategory
 
@@ -8,7 +9,7 @@ from .spa_manager import GeckoSpaManager
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Setup sensor platform."""
+    """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     if spaman.reconnect_button is not None:
         async_add_entities([GeckoReconnectButton(entry, spaman)])

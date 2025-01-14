@@ -1,4 +1,5 @@
 """GeckoEntity class"""
+
 import logging
 
 from typing import Optional
@@ -14,7 +15,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GeckoEntityBase(Entity):
-    """Base for all Gecko entities"""
+    """Base for all Gecko entities."""
 
     def __init__(
         self,
@@ -51,7 +52,7 @@ class GeckoEntityBase(Entity):
         }
         if self.spaman.facade is not None:
             info["model"] = (
-                f"{self.spaman.facade.spa.pack} " f"{self.spaman.facade.spa.version}"
+                f"{self.spaman.facade.spa.pack} {self.spaman.facade.spa.version}"
             )
             info["sw_version"] = (
                 f"SpaPack:v{self.spaman.facade.spa.revision} "
