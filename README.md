@@ -113,3 +113,16 @@ label, and copy the data block (which begins ```{'Integration Version ...'```}).
 Add this data as a reply to your issue on Github. One snapshot per reply please otherwise it might get
 too busy. Annotate the reply with a statement of what your spa was doing at the snapshot time, e.g.
 "Idle" or "After turning RGB light to Red".
+
+[gecko-ha]: https://github.com/gazoodle/gecko-home-assistant
+[commits-shield]: https://img.shields.io/github/commit-activity/y/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[commits]: https://github.com/gazoodle/gecko-home-assistant/commits/master
+[hacs]: https://github.com/hacs/integration
+[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[screenshotimg]: screenshot.png
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
+[forum]: https://community.home-assistant.io/
+[license-shield]: https://img.shields.io/github/license/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-gazoodle%40hash.fyi-blue.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/gazoodle/gecko-home-assistant.svg?style=for-the-badge
+[releases]: https://github.com/gazoodle/gecko-home-assistant/releases
