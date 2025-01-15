@@ -26,11 +26,6 @@ from .spa_manager import GeckoSpaManager
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup(_hass: HomeAssistant, _config: ConfigType) -> bool:
-    """Set up this integration using YAML is not supported."""
-    return True
-
-
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Migrate old entry."""
     _LOGGER.debug("Migrating from version %s", config_entry.version)

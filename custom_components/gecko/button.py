@@ -88,7 +88,7 @@ class GeckoSnapshotButton(GeckoEntityBase, ButtonEntity):
         _LOGGER.info(dump)
 
         persistent_body = (
-            f"A snapshot of your Gecko system was taken at {datetime.datetime.now()}\n"
+            f"A snapshot of your Gecko system was taken at {datetime.datetime.now().astimezone().isoformat()}\n"  # noqa: E501
             f"<details>"
             f"<summary>Click to expand</summary>\n\n"
             f"```{data}```"
