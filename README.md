@@ -16,6 +16,10 @@
 
 ## Version History
 
+v0.1.15
+ - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
+   is now a minimum requirement. hacs.json updated accordingly.
+
 v0.1.14
 - Get validation & lint workflows running
 - Expose temperature sensors for current temperature, set point temperature and real setpoint

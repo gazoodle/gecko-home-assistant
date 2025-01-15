@@ -12,5 +12,5 @@
   "requirements": [
     "geckolib==0.4.18"
   ],
-  "version": "0.1.14"
+  "version": "0.1.15"
 }
