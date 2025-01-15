@@ -4,6 +4,8 @@ config:
 history:
 logbook:
 stream:
+notify:
+homeassistant_alerts:
 
 # https://www.home-assistant.io/integrations/homeassistant/
 homeassistant:

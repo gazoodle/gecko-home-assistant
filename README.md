@@ -18,6 +18,10 @@
 
 v0.1.14
 - Get validation & lint workflows running
+- Expose temperature sensors for current temperature, set point temperature and real setpoint
+  temperature which takes economy mode into consideration. These allow various automations to
+  be written that otherwise would have to dig into the attributes of the climate control object
+- Added 'Snapshot' button to dump data that might be useful in getting new spa features implemented
 
 v0.1.13
 - Bump the version number!
