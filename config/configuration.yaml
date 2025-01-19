@@ -1,0 +1,19 @@
+# https://www.home-assistant.io/integrations/default_config/
+# For gecko development, we only need a small subset
+config:
+history:
+logbook:
+stream:
+notify:
+homeassistant_alerts:
+
+# https://www.home-assistant.io/integrations/homeassistant/
+homeassistant:
+  debug: true
+
+# https://www.home-assistant.io/integrations/logger/
+logger:
+  default: info
+  logs:
+    custom_components.gecko: debug
+    geckolib: info

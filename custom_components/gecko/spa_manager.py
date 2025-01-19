@@ -1,38 +1,50 @@
-"""GeckoSpaManager class manages the interactions between geckolib and HA"""
+"""GeckoSpaManager class manages the interactions between geckolib and HA."""
+
 from __future__ import annotations
 
 import asyncio
 import logging
-
-from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent, GeckoConstants
-from homeassistant.config_entries import HomeAssistant, ConfigEntry
-from .const import PLATFORMS, SENSOR, BUTTON, SHOW_PING_KEY
 from queue import Queue
-from typing import Optional
+from typing import TYPE_CHECKING, Any, Self
+
+from geckolib import GeckoAsyncSpaMan, GeckoConstants, GeckoSpaEvent
+
+from .const import (
+    BUTTON,
+    PLATFORMS,
+    SENSOR,
+    SHOW_PING_KEY,
+)
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
 
 _LOGGER = logging.getLogger(__name__)
 
 
 class GeckoSpaManager(GeckoAsyncSpaMan):
-    """HA Gecko Spa Manager"""
+    """HA Gecko Spa Manager."""
 
     def __init__(
         self,
         client_id: str,
-        hass: Optional[HomeAssistant],
-        entry: Optional[ConfigEntry],
-        **kwargs,
-    ):
+        hass: HomeAssistant | None,
+        entry: ConfigEntry | None,
+        **kwargs: Any,
+    ) -> None:
+        """Initialize the Spa Manager."""
         super().__init__(client_id, **kwargs)
-        self.hass: Optional[HomeAssistant] = hass
-        self.entry: Optional[ConfigEntry] = entry
+        self.hass: HomeAssistant | None = hass
+        self.entry: ConfigEntry | None = entry
 
         self._can_use_facade = False
 
         self.platforms = []
         self._event_queue: Queue = Queue()
 
-    async def __aenter__(self) -> GeckoSpaManager:
+    async def __aenter__(self) -> Self:
+        """Perform async enter."""
         await super().__aenter__()
         self.add_task(
             self._queue_loop(), "Home Assistant Gecko Spa Manager", "HASPAMAN"
@@ -64,7 +76,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
             finally:
                 await asyncio.sleep(GeckoConstants.ASYNCIO_SLEEP_TIMEOUT_FOR_YIELD)
 
-    async def handle_event(self, event: GeckoSpaEvent, **kwargs) -> None:
+    async def handle_event(self, event: GeckoSpaEvent, **_kwargs: Any) -> None:
         """Handle spa manager events."""
         _LOGGER.debug("Event: %s, state %s", event, self.spa_state)
         # The Geckolib spa manager issues events as they happen, and sometimes
@@ -72,24 +84,20 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         # because otherwise we end up trying to build platforms at the same time
         self._event_queue.put(event)
 
-    async def unload_platforms(self) -> None:
-        """Unload the platforms that were previously loaded"""
-        assert self.hass is not None
-
+    async def unload_platforms(self) -> bool:
+        """Unload the platforms that were previously loaded."""
         if len(self.platforms) > 0:
             _LOGGER.debug("Unload platforms %s", self.platforms)
 
-            unloaded = await self.hass.config_entries.async_unload_platforms(
+            unloaded: bool = await self.hass.config_entries.async_unload_platforms(
                 self.entry, self.platforms
             )
             self.platforms = []
             return unloaded
+        return True
 
     async def load_platforms(self) -> None:
-        """Load the appropriate platforms"""
-        assert self.hass is not None
-        assert self.entry is not None
-
+        """Load the appropriate platforms."""
         if self._can_use_facade:
             self.platforms = PLATFORMS
         else:
@@ -101,12 +109,13 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         )
 
     async def reload(self) -> None:
-        """Reload the platforms"""
+        """Reload the platforms."""
         await self.unload_platforms()
         await self.load_platforms()
 
     @property
     def show_ping_sensor(self) -> bool:
+        """Show the ping sensor property."""
         if SHOW_PING_KEY not in self.entry.options:
             return False
         return self.entry.options[SHOW_PING_KEY]

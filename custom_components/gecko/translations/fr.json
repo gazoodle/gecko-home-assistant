@@ -1,0 +1,36 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuration Gecko",
+        "description": "Svp fournir l'adresse IP de votre spa, ou laisser en blanc pour rechercher un spa présent sur le réseau.",
+        "data": {
+          "ipaddress": "Adresse IP"
+        }
+      },
+      "pick": {
+        "title": "Choisir un spa pour s'y connecter.",
+        "description": "",
+        "data": {
+          "spalist": "Choisir votre spa."
+        }
+      }
+    },
+    "error": {
+      "no_spa": "ne peut trouver un spa à cette adresse. Svp essayer de nouveau.",
+      "not_ip": "Svp entrer une adresse IP valide ou laisser le champ en blanc pour le rechercher."
+    },
+    "abort": {
+      "no_spas": "Aucun spa trouvé sur votre réseau. Svp vous assurerque vous etes sur le même réseau que le module in.touch2 et vérifier le résultat de nouveau sur l'appli iOS ou Android."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "show_ping": "Afficher le capteur de ping (Affetera la taille du fichier journal)"
+        }
+      }
+    }
+  }
+}
