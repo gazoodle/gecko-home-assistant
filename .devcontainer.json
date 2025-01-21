@@ -54,6 +54,8 @@
 		"--mount",
 		"type=bind,source=/Users/gary/Documents/Source/geckolib,target=/usr/src/geckolib",
 		"--add-host",
-		"spa=10.1.209.91"
+		"spa=10.1.209.91",
+		"--add-host",
+		"udpspa=localhost"
 	]
 }

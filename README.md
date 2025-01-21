@@ -17,7 +17,7 @@
 ## Version History
 
 v0.1.16
- -
+ - Using better async patterns which should alleviate some CPU usage issues and connection problems.
 
 v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
