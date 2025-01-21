@@ -64,6 +64,12 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
                 self._can_use_facade = True
                 await self.reload()
 
+            elif event in [
+                GeckoSpaEvent.CLIENT_HAS_RECONNECT_BUTTON,
+                GeckoSpaEvent.CLIENT_HAS_STATUS_SENSOR,
+            ]:
+                await self.reload()
+
             elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
                 self._can_use_facade = False
                 await self.reload()

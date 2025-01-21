@@ -18,6 +18,10 @@
 
 v0.1.16
  - Using better async patterns which should alleviate some CPU usage issues and connection problems.
+ - Much faster integration setup, removed wait for full connection from the init loop.
+ - Status sensor available immediately so initialization progress can be tracked.
+ - Reconnect button available after full connection, or connection failure allowing retry without
+   having to restart HA.
 
 v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this

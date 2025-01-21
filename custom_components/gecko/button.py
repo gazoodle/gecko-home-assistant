@@ -23,7 +23,8 @@ async def async_setup_entry(
 ) -> None:
     """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    async_add_entities([GeckoSnapshotButton(entry, spaman)])
+    if spaman.can_use_facade:
+        async_add_entities([GeckoSnapshotButton(entry, spaman)])
     if spaman.reconnect_button is not None:
         async_add_entities([GeckoReconnectButton(entry, spaman)])
 
