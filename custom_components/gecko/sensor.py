@@ -60,7 +60,7 @@ async def async_setup_entry(
             GeckoSensor(spaman, entry, sensor) for sensor in spaman.facade.sensors
         )
         sensors.extend(
-            GeckoReminderSensor(spaman, entry, reminder.type)
+            GeckoReminderSensor(spaman, entry, reminder.reminder_type)
             for reminder in spaman.facade.reminders_manager.reminders
         )
         sensors.append(GeckoErrorTextSensor(spaman, entry, spaman.facade.error_sensor))

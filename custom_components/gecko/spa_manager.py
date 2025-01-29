@@ -6,7 +6,7 @@ import asyncio
 import logging
 from typing import TYPE_CHECKING, Any, Self
 
-from geckolib import GeckoAsyncSpaMan, GeckoConstants, GeckoSpaEvent
+from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent
 
 from .const import (
     BUTTON,
