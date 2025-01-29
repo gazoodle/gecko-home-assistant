@@ -41,11 +41,11 @@ class GeckoLight(GeckoEntity, LightEntity):
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn on the switch."""
-        self._automation_entity.turn_on()
+        await self._automation_entity.async_turn_on()
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn off the switch."""
-        self._automation_entity.turn_off()
+        await self._automation_entity.async_turn_off()
 
     @property
     def icon(self) -> str:

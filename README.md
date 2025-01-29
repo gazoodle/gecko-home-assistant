@@ -16,6 +16,13 @@
 
 ## Version History
 
+v0.1.16
+ - Using better async patterns which should alleviate some CPU usage issues and connection problems.
+ - Much faster integration setup, removed wait for full connection from the init loop.
+ - Status sensor available immediately so initialization progress can be tracked.
+ - Reconnect button available after full connection, or connection failure allowing retry without
+   having to restart HA.
+
 v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
    is now a minimum requirement. hacs.json updated accordingly.
@@ -108,7 +115,7 @@ during you exercising the feature.
 
 You should find this data in your log file but, for convenience, it's also in the persistent notification
 panel on lovelace. Select the snapshot notification, expand the data block behind the "Click to expand"
-label, and copy the data block (which begins ```{'Integration Version ...'```}). 
+label, and copy the data block (which begins ```{'Integration Version ...'```}).
 
 Add this data as a reply to your issue on Github. One snapshot per reply please otherwise it might get
 too busy. Annotate the reply with a statement of what your spa was doing at the snapshot time, e.g.

@@ -75,15 +75,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         spa_name=spa_name,
     )
     await spaman.__aenter__()
-    # We always wait for the facade because otherwise the
-    # device info is not available for the first entity
-    if not await spaman.wait_for_facade():
-        _LOGGER.error(
-            "Failed to connect to spa %s address %s", spa_identifier, spa_address
-        )
-        raise ConfigEntryNotReady
 
-    _LOGGER.debug("Facade acquired, go for platform load")
     hass.data[DOMAIN][entry.entry_id] = spaman
 
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

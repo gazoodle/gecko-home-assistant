@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from queue import Queue
 from typing import TYPE_CHECKING, Any, Self
 
-from geckolib import GeckoAsyncSpaMan, GeckoConstants, GeckoSpaEvent
+from geckolib import GeckoAsyncSpaMan, GeckoSpaEvent
 
 from .const import (
     BUTTON,
@@ -41,7 +40,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         self._can_use_facade = False
 
         self.platforms = []
-        self._event_queue: Queue = Queue()
+        self._event_queue: asyncio.Queue = asyncio.Queue()
 
     async def __aenter__(self) -> Self:
         """Perform async enter."""
@@ -58,23 +57,22 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     async def _queue_loop(self) -> None:
         while True:
-            try:
-                if self._event_queue.empty():
-                    continue
+            event = await self._event_queue.get()
+            if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
+                # Wait for a single update so we have reminders and watercare
+                await self.facade.wait_for_one_update()
+                self._can_use_facade = True
+                await self.reload()
 
-                event = self._event_queue.get()
-                if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
-                    # Wait for a single update so we have reminders and watercare
-                    await self.facade.wait_for_one_update()
-                    self._can_use_facade = True
-                    await self.reload()
+            elif event in [
+                GeckoSpaEvent.CLIENT_HAS_RECONNECT_BUTTON,
+                GeckoSpaEvent.CLIENT_HAS_STATUS_SENSOR,
+            ]:
+                await self.reload()
 
-                elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
-                    self._can_use_facade = False
-                    await self.reload()
-
-            finally:
-                await asyncio.sleep(GeckoConstants.ASYNCIO_SLEEP_TIMEOUT_FOR_YIELD)
+            elif event == GeckoSpaEvent.CLIENT_FACADE_TEARDOWN:
+                self._can_use_facade = False
+                await self.reload()
 
     async def handle_event(self, event: GeckoSpaEvent, **_kwargs: Any) -> None:
         """Handle spa manager events."""
@@ -82,7 +80,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         # The Geckolib spa manager issues events as they happen, and sometimes
         # this is what you want, but for HA, we want to serialise some of them
         # because otherwise we end up trying to build platforms at the same time
-        self._event_queue.put(event)
+        await self._event_queue.put(event)
 
     async def unload_platforms(self) -> bool:
         """Unload the platforms that were previously loaded."""
