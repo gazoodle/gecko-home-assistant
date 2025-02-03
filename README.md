@@ -22,7 +22,7 @@ v0.1.16
  - Status sensor available immediately so initialization progress can be tracked.
  - Reconnect button available after full connection, or connection failure allowing retry without
    having to restart HA.
- - Added "Spa In Use" sensor that is ON if any pumps, blowers or lights are on
+ - Added "Spa In Use" sensor that is ON if any pumps, blowers or lights are on.
 
 v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
