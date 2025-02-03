@@ -30,6 +30,9 @@ async def async_setup_entry(
                 for sensor in spaman.facade.binary_sensors
             ]
         )
+        async_add_entities(
+            [GeckoBinarySensor(spaman, entry, spaman.facade.spa_in_use_sensor)]
+        )
 
 
 class GeckoBinarySensor(GeckoEntity, BinarySensorEntity):

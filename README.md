@@ -22,6 +22,7 @@ v0.1.16
  - Status sensor available immediately so initialization progress can be tracked.
  - Reconnect button available after full connection, or connection failure allowing retry without
    having to restart HA.
+ - Added "Spa In Use" sensor that is ON if any pumps, blowers or lights are on
 
 v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
@@ -130,6 +131,6 @@ too busy. Annotate the reply with a statement of what your spa was doing at the 
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/gazoodle/gecko-home-assistant.svg?style=for-the-badge
-[maintenance-shield]: https://img.shields.io/badge/maintainer-gazoodle%40hash.fyi-blue.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-https://github.com/gazoodle-blue.svg?style=for-the-badge
 [releases-shield]: https://img.shields.io/github/release/gazoodle/gecko-home-assistant.svg?style=for-the-badge
 [releases]: https://github.com/gazoodle/gecko-home-assistant/releases

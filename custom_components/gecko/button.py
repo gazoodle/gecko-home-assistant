@@ -3,7 +3,6 @@
 import datetime
 import logging
 
-from geckolib._version import VERSION as LIBRARY_VERSION
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
@@ -71,20 +70,12 @@ class GeckoSnapshotButton(GeckoEntityBase, ButtonEntity):
         facade = self.spaman.facade
         if facade is None:
             return
-        data = {
-            "Integration Version": INTEGRATION_VERSION,
-            "Library Version": LIBRARY_VERSION,
-            "SpaPackStruct.xml revision": facade.spa.revision,
-            "intouch version EN": facade.spa.intouch_version_en,
-            "intouch version CO": facade.spa.intouch_version_co,
-            "Spa pack": f"{facade.spa.pack} {facade.spa.version}",
-            "Low level configuration #": facade.spa.config_number,
-            "Config version": facade.spa.config_version,
-            "Log version": facade.spa.log_version,
-            "Pack type": facade.spa.pack_type,
-            "Snapshot UTC Time": f"{datetime.datetime.now(tz=datetime.UTC)}",
-            "Status Block": [hex(b) for b in facade.spa.struct.status_block],
-        }
+        data = facade.spa.get_snapshot_data()
+        data.update(
+            {
+                "Integration Version": INTEGRATION_VERSION,
+            }
+        )
         dump = f"SNAPSHOT ========{data}========"
         _LOGGER.info(dump)
 
