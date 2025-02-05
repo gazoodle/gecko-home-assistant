@@ -23,6 +23,8 @@ v0.1.16
  - Reconnect button available after full connection, or connection failure allowing retry without
    having to restart HA.
  - Added "Spa In Use" sensor that is ON if any pumps, blowers or lights are on.
+ - Added support for external heat sources
+ - This is a big change, so I'm releasing it now while I'm still available to fix issues quickly
 
 v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
@@ -59,6 +61,7 @@ Platform | Description
 `fan` | Spa pumps, fans.
 `light`  | Spa lights
 `climate` | Spa water heater
+`select` | External heating support
 
 ## Example screen shot
 
@@ -79,24 +82,6 @@ If you don't have/want HACS installed, you will need to manually install the int
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Gecko"
-
-Using your HA configuration directory (folder) as a starting point you should now also have this:
-
-```text
-custom_components/gecko/.translations/en.json
-custom_components/gecko/__init__.py
-custom_components/gecko/binary_sensor.py
-custom_components/gecko/button.py
-custom_components/gecko/climate.py
-custom_components/gecko/config_flow.py
-custom_components/gecko/const.py
-custom_components/gecko/fan.py
-custom_components/gecko/light.py
-custom_components/gecko/manifest.json
-custom_components/gecko/sensor.py
-custom_components/gecko/spa_manager.py
-custom_components/gecko/switch.py
-```
 
 ## Using the snapshot functionality
 
