@@ -16,6 +16,8 @@
 
 ## Version History
 
+v0.1.17
+
 v0.1.16
  - Using better async patterns which should alleviate some CPU usage issues and connection problems.
  - Much faster integration setup, removed wait for full connection from the init loop.
