@@ -17,6 +17,7 @@
 ## Version History
 
 v0.1.17
+ - Add supoort for lock mode if it exists
 
 v0.1.16
  - Using better async patterns which should alleviate some CPU usage issues and connection problems.

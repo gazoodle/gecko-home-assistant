@@ -25,6 +25,8 @@ async def async_setup_entry(
             async_add_entities([GeckoHeatPump(spaman, entry, spaman.facade.heatpump)])
         if spaman.facade.ingrid is not None:
             async_add_entities([GeckoInGrid(spaman, entry, spaman.facade.ingrid)])
+        if spaman.facade.lockmode is not None:
+            async_add_entities([GeckoLockMode(spaman, entry, spaman.facade.lockmode)])
 
 
 class GeckoSelect(GeckoEntity, SelectEntity):
@@ -71,3 +73,16 @@ class GeckoInGrid(GeckoSelect):
     def icon(self) -> str:
         """Get the icon for the heatpump."""
         return "mdi:heat-wave"
+
+
+class GeckoLockMode(GeckoSelect):
+    """Lockmode class."""
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for the heatpump."""
+        if self.current_option == "Unlocked":
+            return "mdi:lock-open-variant-outline"
+        if self.current_option.startswith("Partial"):
+            return "mdi:lock-minus-outline"
+        return "mdi:lock-outline"
