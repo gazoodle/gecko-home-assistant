@@ -18,6 +18,7 @@
 
 v0.1.17
  - Add supoort for lock mode if it exists
+ - Add support for standby mode
 
 v0.1.16
  - Using better async patterns which should alleviate some CPU usage issues and connection problems.

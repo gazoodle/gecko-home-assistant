@@ -26,6 +26,8 @@ async def async_setup_entry(
         ]
         if spaman.facade.eco_mode is not None:
             entities.append(GeckoBinarySwitch(spaman, entry, spaman.facade.eco_mode))
+        if spaman.facade.standby is not None:
+            entities.append(GeckoBinarySwitch(spaman, entry, spaman.facade.standby))
         async_add_entities(entities)
 
 
