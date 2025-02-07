@@ -16,6 +16,9 @@
 
 ## Version History
 
+v0.1.18
+ - Implement climate action async_set_hvac_mode so that the integration can be used in scenes
+
 v0.1.17
  - Add supoort for lock mode if it exists
  - Add support for standby mode

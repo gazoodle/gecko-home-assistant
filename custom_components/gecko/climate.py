@@ -117,3 +117,6 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         await self._automation_entity.async_set_target_temperature(
             kwargs["temperature"]
         )
+
+    async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
+        """Fake function to set HVAC mode."""
