@@ -16,6 +16,8 @@
 
 ## Version History
 
+v0.1.19
+
 v0.1.18
  - Implement climate action async_set_hvac_mode so that the integration can be used in scenes
 
