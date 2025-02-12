@@ -41,21 +41,24 @@ async def async_setup_entry(
             GeckoSensor(spaman, entry, spaman.channel_sensor, EntityCategory.DIAGNOSTIC)
         )
     if spaman.can_use_facade and spaman.facade is not None:
-        sensors.append(
-            GeckoSensor(
-                spaman, entry, spaman.facade.water_heater.current_temperature_sensor
+        if spaman.facade.water_heater.is_present:
+            sensors.append(
+                GeckoSensor(
+                    spaman, entry, spaman.facade.water_heater.current_temperature_sensor
+                )
             )
-        )
-        sensors.append(
-            GeckoSensor(
-                spaman, entry, spaman.facade.water_heater.target_temperature_sensor
+            sensors.append(
+                GeckoSensor(
+                    spaman, entry, spaman.facade.water_heater.target_temperature_sensor
+                )
             )
-        )
-        sensors.append(
-            GeckoSensor(
-                spaman, entry, spaman.facade.water_heater.real_target_temperature_sensor
+            sensors.append(
+                GeckoSensor(
+                    spaman,
+                    entry,
+                    spaman.facade.water_heater.real_target_temperature_sensor,
+                )
             )
-        )
         sensors.extend(
             GeckoSensor(spaman, entry, sensor) for sensor in spaman.facade.sensors
         )
