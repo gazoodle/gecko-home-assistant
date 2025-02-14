@@ -14,21 +14,24 @@
 ![Lint](https://github.com/gazoodle/gecko-home-assistant/actions/workflows/lint.yml/badge.svg)
 
 
-## Version History
+# Version History
 
-v0.1.19
+## v0.1.19
  - Update bug template to link to gecko-home-assistant issues rather than the blueprint
  - Rework pumps to use new clean library versions, now supports one, two and variable speed pumps
 
-v0.1.18
+## Breaking Changes
+ - Blower is now a fan, not a switch
+
+## v0.1.18
  - Implement climate action async_set_hvac_mode so that the integration can be used in scenes
 
-v0.1.17
+## v0.1.17
  - Add supoort for lock mode if it exists
  - Add support for standby mode
  - Add "Heating" binary sensor
 
-v0.1.16
+## v0.1.16
  - Using better async patterns which should alleviate some CPU usage issues and connection problems.
  - Much faster integration setup, removed wait for full connection from the init loop.
  - Status sensor available immediately so initialization progress can be tracked.
@@ -38,21 +41,21 @@ v0.1.16
  - Added support for external heat sources
  - This is a big change, so I'm releasing it now while I'm still available to fix issues quickly
 
-v0.1.15
+## v0.1.15
  - During the tidy and delint phase, constants were imported from HA 2025 locations, so this
    is now a minimum requirement. hacs.json updated accordingly.
 
-v0.1.14
+## v0.1.14
 - Get validation & lint workflows running
 - Expose temperature sensors for current temperature, set point temperature and real setpoint
   temperature which takes economy mode into consideration. These allow various automations to
   be written that otherwise would have to dig into the attributes of the climate control object
 - Added 'Snapshot' button to dump data that might be useful in getting new spa features implemented
 
-v0.1.13
+## v0.1.13
 - Bump the version number!
 
-v0.1.12
+## v0.1.12
 - Removed warnings about light color modes
 - Added French string table, thanks @claudegel
 - Fixed ConfigType, thanks @grahamcraqer

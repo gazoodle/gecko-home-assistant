@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any, cast
 
-from geckolib import GeckoPump
+from geckolib import GeckoBlower, GeckoPump
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -22,7 +22,10 @@ async def async_setup_entry(
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     if spaman.facade is not None:
         async_add_entities(
-            [GeckoFan(spaman, entry, pump) for pump in spaman.facade.pumps]
+            [
+                GeckoFan(spaman, entry, pump)
+                for pump in list(spaman.facade.pumps + spaman.facade.blowers)
+            ]
         )
 
 
@@ -69,6 +72,8 @@ class GeckoFan(GeckoEntity, FanEntity):
     @property
     def icon(self) -> str:
         """Return the icon of this switch."""
+        if isinstance(self._automation_entity, GeckoBlower):
+            return "mdi:fan"
         return "mdi:pump"
 
     @property

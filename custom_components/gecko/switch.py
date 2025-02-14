@@ -2,7 +2,6 @@
 
 from typing import TYPE_CHECKING, Any
 
-from geckolib import GeckoBlower, GeckoPump
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -21,9 +20,7 @@ async def async_setup_entry(
     """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     if spaman.facade is not None:
-        entities = [
-            GeckoBinarySwitch(spaman, entry, blower) for blower in spaman.facade.blowers
-        ]
+        entities = []
         if spaman.facade.eco_mode is not None:
             entities.append(GeckoBinarySwitch(spaman, entry, spaman.facade.eco_mode))
         if spaman.facade.standby is not None:
@@ -45,10 +42,6 @@ class GeckoBinarySwitch(GeckoEntity, SwitchEntity):
     @property
     def icon(self) -> str:
         """Return the icon of this switch."""
-        if isinstance(self._automation_entity, GeckoPump):
-            return "mdi:pump"
-        if isinstance(self._automation_entity, GeckoBlower):
-            return "mdi:fan"
         return "mdi:toggle-switch"
 
     @property
