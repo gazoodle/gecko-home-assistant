@@ -18,6 +18,7 @@
 
 v0.1.19
  - Update bug template to link to gecko-home-assistant issues rather than the blueprint
+ - Rework pumps to use new clean library versions, now supports one, two and variable speed pumps
 
 v0.1.18
  - Implement climate action async_set_hvac_mode so that the integration can be used in scenes

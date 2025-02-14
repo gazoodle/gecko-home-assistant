@@ -1,7 +1,8 @@
 """Fan platform for Gecko."""
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
+from geckolib import GeckoPump
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -31,34 +32,39 @@ class GeckoFan(GeckoEntity, FanEntity):
     async def async_turn_on(
         self,
         _speed: str | None = None,
-        _percentage: int | None = None,
-        _preset_mode: int | None = None,
+        percentage: int | None = None,
+        preset_mode: str | None = None,
         **_kwargs: Any,
     ) -> None:
         """Turn on the switch."""
-        await self._automation_entity.async_set_mode("HI")
+        await self.pump.async_turn_on(percentage, preset_mode)
 
     async def async_turn_off(self, **_kwarg: Any) -> None:
         """Turn off the switch."""
-        await self._automation_entity.async_set_mode("OFF")
+        await self.pump.async_turn_off()
+
+    async def async_set_percentage(self, percentage: int) -> None:
+        """Set the speed percentage of the fan."""
+        await self.pump.async_turn_on(percentage, None)
 
     async def async_set_preset_mode(self, preset_mode: str) -> None:
         """Set the fan preset mode."""
-        await self._automation_entity.async_set_mode(preset_mode)
+        await self.pump.async_set_mode(preset_mode)
 
     @property
     def is_on(self) -> bool:
         """Get the fan on/off state."""
-        return self._automation_entity.is_on
+        return self.pump.is_on
 
     @property
     def supported_features(self) -> FanEntityFeature:
         """Get fan supported features."""
-        return (
-            FanEntityFeature.PRESET_MODE
-            | FanEntityFeature.TURN_ON
-            | FanEntityFeature.TURN_OFF
-        )
+        features = FanEntityFeature.TURN_ON | FanEntityFeature.TURN_OFF
+        if self.pump.pump_type == GeckoPump.PumpType.TWO_SPEED:
+            features |= FanEntityFeature.PRESET_MODE
+        if self.pump.pump_type == GeckoPump.PumpType.VARIABLE_SPEED:
+            features |= FanEntityFeature.SET_SPEED
+        return features
 
     @property
     def icon(self) -> str:
@@ -68,9 +74,21 @@ class GeckoFan(GeckoEntity, FanEntity):
     @property
     def preset_modes(self) -> list[str]:
         """Get preset modes."""
-        return self._automation_entity.modes
+        return self.pump.modes
 
     @property
     def preset_mode(self) -> str:
         """Get current preset mode."""
-        return self._automation_entity.mode
+        return self.pump.mode
+
+    @property
+    def percentage(self) -> int | None:
+        """Return the current speed percentage."""
+        if self.pump.pump_type == GeckoPump.PumpType.VARIABLE_SPEED:
+            return self.pump.percentage
+        return None
+
+    @property
+    def pump(self) -> GeckoPump:
+        """Get the pump."""
+        return cast(GeckoPump, self._automation_entity)
