@@ -3,6 +3,7 @@
 import datetime
 import logging
 
+from geckolib.automation.button import GeckoButton as GeckoLibButton
 from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
@@ -13,7 +14,6 @@ from .const import DOMAIN
 from .const import VERSION as INTEGRATION_VERSION
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
-from geckolib.automation.button import GeckoButton as GeckoLibButton
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -47,6 +47,7 @@ class GeckoKeypadButton(GeckoButton):
     def __init__(
         self, config_entry: ConfigEntry, spaman: GeckoSpaManager, button: GeckoLibButton
     ) -> None:
+        """Initialize the keypad button."""
         super().__init__(spaman, config_entry, button)
         self._button: GeckoLibButton = button
 

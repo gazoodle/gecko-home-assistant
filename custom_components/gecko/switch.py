@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -22,9 +23,17 @@ async def async_setup_entry(
     if spaman.facade is not None:
         entities = []
         if spaman.facade.eco_mode is not None:
-            entities.append(GeckoBinarySwitch(spaman, entry, spaman.facade.eco_mode))
+            entities.append(
+                GeckoBinarySwitch(
+                    spaman, entry, spaman.facade.eco_mode, EntityCategory.CONFIG
+                )
+            )
         if spaman.facade.standby is not None:
-            entities.append(GeckoBinarySwitch(spaman, entry, spaman.facade.standby))
+            entities.append(
+                GeckoBinarySwitch(
+                    spaman, entry, spaman.facade.standby, EntityCategory.CONFIG
+                )
+            )
         async_add_entities(entities)
 
 

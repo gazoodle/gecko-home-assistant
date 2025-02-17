@@ -17,6 +17,10 @@
 # Version History
 
 ## v0.1.21
+ - Prevent various entities (such as reminder dates) from being included in scenes as this would make
+   reminders a bit pointless. This was belt and braces really since the date platform doesn't support
+   scene restore, but in doing this, there were other entities that were being used that would have
+   potentially caused problems.
 
 ## v0.1.20
  - Support changing date for reminders. A simple button to reset was originally considered, but

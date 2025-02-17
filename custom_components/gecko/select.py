@@ -5,6 +5,7 @@ import logging
 from geckolib import GeckoAutomationFacadeBase
 from homeassistant.components.select import SelectEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -48,6 +49,7 @@ class GeckoSelect(GeckoEntity, SelectEntity):
     ) -> None:
         """Initialize the select."""
         super().__init__(spaman, entry, select)
+        self._entity_category = EntityCategory.CONFIG
         _LOGGER.debug("%r loaded. Options are %s", select, select.states)
 
     @property

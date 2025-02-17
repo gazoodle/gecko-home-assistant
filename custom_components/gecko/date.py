@@ -7,6 +7,7 @@ from typing import Any
 from geckolib import GeckoReminderType
 from homeassistant.components.date import DateEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -69,6 +70,7 @@ class GeckoReminderDate(GeckoEntityBase, DateEntity):
         )
         self._reminder_type = reminder_type
         self.spaman.facade.reminders_manager.watch(self._on_change)
+        self._entity_category = EntityCategory.CONFIG
 
     @property
     def native_value(self) -> datetime | None:
