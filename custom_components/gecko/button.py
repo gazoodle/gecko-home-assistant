@@ -59,7 +59,7 @@ class GeckoSnapshotButton(GeckoEntityBase, ButtonEntity):
         super().__init__(
             spaman,
             config_entry,
-            f"{spaman.facade.unique_id}-SNAPSHOT",
+            f"{spaman.unique_id}-SNAPSHOT",
             "Snapshot",
             spaman.facade.name,
         )

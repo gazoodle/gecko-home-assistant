@@ -31,7 +31,18 @@ SWITCH = "switch"
 CLIMATE = "climate"
 LIGHT = "light"
 SELECT = "select"
-PLATFORMS = [BINARY_SENSOR, BUTTON, FAN, SENSOR, SWITCH, CLIMATE, LIGHT, SELECT]
+WATER_HEATER = "water_heater"
+PLATFORMS = [
+    BINARY_SENSOR,
+    BUTTON,
+    FAN,
+    SENSOR,
+    SWITCH,
+    CLIMATE,
+    LIGHT,
+    SELECT,
+    WATER_HEATER,
+]
 
 # Option keys
 SHOW_PING_KEY = "show_ping"

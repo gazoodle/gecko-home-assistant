@@ -20,13 +20,16 @@ async def async_setup_entry(
 ) -> None:
     """Set up select platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    if spaman.facade is not None:
+    if spaman.can_use_facade:
+        selects = []
         if spaman.facade.heatpump is not None:
-            async_add_entities([GeckoHeatPump(spaman, entry, spaman.facade.heatpump)])
+            selects.append(GeckoHeatPump(spaman, entry, spaman.facade.heatpump))
         if spaman.facade.ingrid is not None:
-            async_add_entities([GeckoInGrid(spaman, entry, spaman.facade.ingrid)])
+            selects.append(GeckoInGrid(spaman, entry, spaman.facade.ingrid))
         if spaman.facade.lockmode is not None:
-            async_add_entities([GeckoLockMode(spaman, entry, spaman.facade.lockmode)])
+            selects.append(GeckoLockMode(spaman, entry, spaman.facade.lockmode))
+        selects.append(GeckoWatercare(spaman, entry))
+        async_add_entities(selects)
 
 
 class GeckoSelect(GeckoEntity, SelectEntity):
@@ -80,9 +83,26 @@ class GeckoLockMode(GeckoSelect):
 
     @property
     def icon(self) -> str:
-        """Get the icon for the heatpump."""
+        """Get the icon for the lock."""
         if self.current_option == "Unlocked":
             return "mdi:lock-open-variant-outline"
         if self.current_option.startswith("Partial"):
             return "mdi:lock-minus-outline"
         return "mdi:lock-outline"
+
+
+class GeckoWatercare(GeckoSelect):
+    """Watercare class."""
+
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        entry: ConfigEntry,
+    ) -> None:
+        """Initialize the watercare select."""
+        super().__init__(spaman, entry, spaman.facade.water_care)
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for watercare."""
+        return "mdi:water-check"

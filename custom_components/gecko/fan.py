@@ -2,7 +2,7 @@
 
 from typing import TYPE_CHECKING, Any, cast
 
-from geckolib import GeckoBlower, GeckoPump
+from geckolib import GeckoBlower, GeckoBubbleGenerator, GeckoPump, GeckoWaterfall
 from homeassistant.components.fan import FanEntity, FanEntityFeature
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -74,6 +74,10 @@ class GeckoFan(GeckoEntity, FanEntity):
         """Return the icon of this switch."""
         if isinstance(self._automation_entity, GeckoBlower):
             return "mdi:fan"
+        if isinstance(self._automation_entity, GeckoWaterfall):
+            return "mdi:waterfall"
+        if isinstance(self._automation_entity, GeckoBubbleGenerator):
+            return "mdi:chart-bubble"
         return "mdi:pump"
 
     @property
