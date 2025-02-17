@@ -16,6 +16,8 @@
 
 # Version History
 
+## v0.1.21
+
 ## v0.1.20
  - Support changing date for reminders. A simple button to reset was originally considered, but
    ended up being a date object that can be set which gives much better flexibility. You can
