@@ -1,13 +1,12 @@
-"""Sensor platform for Gecko."""
+"""Date platform for Gecko."""
 
 import logging
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any
 
-from geckolib import GeckoErrorSensor, GeckoReminderType
-from homeassistant.components.sensor import SensorEntity
+from geckolib import GeckoReminderType
+from homeassistant.components.date import DateEntity
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -21,57 +20,19 @@ _LOGGER = logging.getLogger(__name__)
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    """Set up sensor platform."""
+    """Set up date platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    sensors: list = []
-    if spaman.status_sensor is not None:
-        sensors.append(
-            GeckoSensor(spaman, entry, spaman.status_sensor, EntityCategory.DIAGNOSTIC)
-        )
-    if spaman.show_ping_sensor and spaman.ping_sensor is not None:
-        sensors.append(
-            GeckoSensor(spaman, entry, spaman.ping_sensor, EntityCategory.DIAGNOSTIC)
-        )
-    if spaman.radio_sensor is not None:
-        sensors.append(
-            GeckoSensor(spaman, entry, spaman.radio_sensor, EntityCategory.DIAGNOSTIC)
-        )
-    if spaman.channel_sensor is not None:
-        sensors.append(
-            GeckoSensor(spaman, entry, spaman.channel_sensor, EntityCategory.DIAGNOSTIC)
-        )
+    dates: list = []
     if spaman.can_use_facade and spaman.facade is not None:
-        if spaman.facade.water_heater.is_available:
-            sensors.append(
-                GeckoSensor(
-                    spaman, entry, spaman.facade.water_heater.current_temperature_sensor
-                )
-            )
-            sensors.append(
-                GeckoSensor(
-                    spaman, entry, spaman.facade.water_heater.target_temperature_sensor
-                )
-            )
-            sensors.append(
-                GeckoSensor(
-                    spaman,
-                    entry,
-                    spaman.facade.water_heater.real_target_temperature_sensor,
-                )
-            )
-        sensors.extend(
-            GeckoSensor(spaman, entry, sensor) for sensor in spaman.facade.sensors
-        )
-        sensors.extend(
-            GeckoReminderSensor(spaman, entry, reminder.reminder_type)
+        dates.extend(
+            GeckoReminderDate(spaman, entry, reminder.reminder_type)
             for reminder in spaman.facade.reminders_manager.reminders
         )
-        sensors.append(GeckoErrorTextSensor(spaman, entry, spaman.facade.error_sensor))
-    async_add_entities(sensors)
+    async_add_entities(dates)
 
 
-class GeckoSensor(GeckoEntity, SensorEntity):
-    """Gecko Sensor class."""
+class GeckoDate(GeckoEntity, DateEntity):
+    """Gecko Date class."""
 
     @property
     def native_value(self) -> Any:
@@ -89,7 +50,7 @@ class GeckoSensor(GeckoEntity, SensorEntity):
         return self._automation_entity.device_class
 
 
-class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
+class GeckoReminderDate(GeckoEntityBase, DateEntity):
     """Gecko reminder sensor class."""
 
     def __init__(
@@ -103,7 +64,7 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
             spaman,
             config_entry,
             f"{spaman.unique_id}-{GeckoReminderType.to_string(reminder_type)}",
-            f"{GeckoReminderSensor.type_to_name(reminder_type)} due",
+            f"{GeckoReminderDate.type_to_name(reminder_type)} due",
             spaman.spa_name,
         )
         self._reminder_type = reminder_type
@@ -122,6 +83,17 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         today = datetime.now(tz=UTC).date()
         midnight = datetime(today.year, today.month, today.day, 0, 0, 0, 0, UTC)
         return midnight + timedelta(reminder.days)
+
+    async def async_set_value(self, value: date) -> None:
+        """Update the current value."""
+        if self.spaman.facade is None:
+            return
+        today = datetime.now(tz=UTC).date()
+        delta = value - today
+        _LOGGER.debug("Set reminder delta to %d", delta.days)
+        await self.spaman.facade.reminders_manager.set_reminder(
+            self._reminder_type, delta.days
+        )
 
     @property
     def native_unit_of_measurement(self) -> str | None:
@@ -160,41 +132,3 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         """Notify HA of the change."""
         if self.hass is not None:
             self.async_schedule_update_ha_state(force_refresh=True)
-
-
-class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
-    """Gecko text error sensor class."""
-
-    def __init__(
-        self,
-        spaman: GeckoSpaManager,
-        config_entry: ConfigEntry,
-        error_sensor: GeckoErrorSensor,
-    ) -> None:
-        """Initialize the error text sensor."""
-        super().__init__(
-            spaman,
-            config_entry,
-            f"{spaman.unique_id}-ERR",
-            "Error(s)",
-            spaman.spa_name,
-        )
-        self._error_sensor = error_sensor
-        self._entity_category = EntityCategory.DIAGNOSTIC
-
-    @property
-    def native_value(self) -> str | None:
-        """Get native value."""
-        if self.spaman.facade is None:
-            return None
-        return self._error_sensor.state
-
-    @property
-    def native_unit_of_measurement(self) -> str | None:
-        """Get unit of measurement."""
-        return None
-
-    @property
-    def icon(self) -> str:
-        """Get icon."""
-        return "mdi:alert"

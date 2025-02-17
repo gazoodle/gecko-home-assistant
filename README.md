@@ -17,6 +17,9 @@
 # Version History
 
 ## v0.1.20
+ - Support changing date for reminders. A simple button to reset was originally considered, but
+   ended up being a date object that can be set which gives much better flexibility. You can
+   write your own buttons now.
 
 ## v0.1.19
  - Update bug template to link to gecko-home-assistant issues rather than the blueprint
@@ -85,6 +88,8 @@ Platform | Description
 `light`  | Spa lights
 `climate` | Spa water heater
 `select` | External heating support
+`water_heater` | An alternative way to set spa water temperature
+`date` | Reminder reset support
 
 ## Example screen shot
 
