@@ -23,6 +23,7 @@
  - Expose water care mode as a select in addition to the climate preset modes
  - Support light L120 as well as existing internal light
  - Add buttons for all keypad operations
+ - Add support for changing keypad backlight colour
 
 ## Breaking Changes
  - Blower is now a fan, not a switch
