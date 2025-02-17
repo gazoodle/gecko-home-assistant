@@ -19,6 +19,9 @@
 ## v0.1.19
  - Update bug template to link to gecko-home-assistant issues rather than the blueprint
  - Rework pumps to use new clean library versions, now supports one, two and variable speed pumps
+ - Expose water heater as a native water heater entity in addition to the climate one
+ - Expose water care mode as a select in addition to the climate preset modes
+ - Support light L120 as well as existing internal light
 
 ## Breaking Changes
  - Blower is now a fan, not a switch
