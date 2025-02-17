@@ -64,7 +64,7 @@ class GeckoReminderDate(GeckoEntityBase, DateEntity):
         super().__init__(
             spaman,
             config_entry,
-            f"{spaman.unique_id}-{GeckoReminderType.to_string(reminder_type)}",
+            f"{spaman.unique_id}-DateFor{GeckoReminderType.to_string(reminder_type)}",
             f"{GeckoReminderDate.type_to_name(reminder_type)} due",
             spaman.spa_name,
         )
