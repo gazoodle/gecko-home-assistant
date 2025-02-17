@@ -21,13 +21,18 @@ async def async_setup_entry(
     """Set up select platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     if spaman.can_use_facade:
+        assert spaman.facade is not None  # noqa: S101
         selects = []
-        if spaman.facade.heatpump is not None:
+        if spaman.facade.heatpump.is_available:
             selects.append(GeckoHeatPump(spaman, entry, spaman.facade.heatpump))
-        if spaman.facade.ingrid is not None:
+        if spaman.facade.ingrid.is_available:
             selects.append(GeckoInGrid(spaman, entry, spaman.facade.ingrid))
-        if spaman.facade.lockmode is not None:
+        if spaman.facade.lockmode.is_available:
             selects.append(GeckoLockMode(spaman, entry, spaman.facade.lockmode))
+        if spaman.facade.keypad.backlight.is_available:
+            selects.append(
+                GeckoKeypadBacklight(spaman, entry, spaman.facade.keypad.backlight)
+            )
         selects.append(GeckoWatercare(spaman, entry))
         async_add_entities(selects)
 
@@ -89,6 +94,15 @@ class GeckoLockMode(GeckoSelect):
         if self.current_option.startswith("Partial"):
             return "mdi:lock-minus-outline"
         return "mdi:lock-outline"
+
+
+class GeckoKeypadBacklight(GeckoSelect):
+    """Keypad Backlight class."""
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for the keypad."""
+        return "mdi:alarm-panel-outline"
 
 
 class GeckoWatercare(GeckoSelect):
