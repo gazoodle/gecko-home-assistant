@@ -22,9 +22,11 @@
  - Expose water heater as a native water heater entity in addition to the climate one
  - Expose water care mode as a select in addition to the climate preset modes
  - Support light L120 as well as existing internal light
+ - Add buttons for all keypad operations
 
 ## Breaking Changes
  - Blower is now a fan, not a switch
+ - Pump modes are no longer "HIGH", "LOW", "OFF", they are "HI", "LO", "OFF" or "ON"
 
 ## v0.1.18
  - Implement climate action async_set_hvac_mode so that the integration can be used in scenes

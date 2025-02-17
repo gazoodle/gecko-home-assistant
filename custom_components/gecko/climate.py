@@ -25,7 +25,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up climate platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    if spaman.facade is not None and spaman.facade.water_heater.is_present:
+    if spaman.facade is not None and spaman.facade.water_heater.is_available:
         facade: GeckoAsyncFacade = spaman.facade
         async_add_entities(
             [

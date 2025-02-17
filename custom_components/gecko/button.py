@@ -13,6 +13,7 @@ from .const import DOMAIN
 from .const import VERSION as INTEGRATION_VERSION
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
+from geckolib.automation.button import GeckoButton as GeckoLibButton
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,14 +23,36 @@ async def async_setup_entry(
 ) -> None:
     """Set up sensor platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
+    buttons = []
     if spaman.can_use_facade:
-        async_add_entities([GeckoSnapshotButton(entry, spaman)])
+        buttons.append(GeckoSnapshotButton(entry, spaman))
+        buttons.extend(
+            [
+                GeckoKeypadButton(entry, spaman, button)
+                for button in spaman.facade.keypad.buttons
+            ]
+        )
     if spaman.reconnect_button is not None:
-        async_add_entities([GeckoReconnectButton(entry, spaman)])
+        buttons.append(GeckoReconnectButton(entry, spaman))
+    async_add_entities(buttons)
 
 
 class GeckoButton(GeckoEntity, ButtonEntity):
     """Gecko button class."""
+
+
+class GeckoKeypadButton(GeckoButton):
+    """Gecko keypad button."""
+
+    def __init__(
+        self, config_entry: ConfigEntry, spaman: GeckoSpaManager, button: GeckoLibButton
+    ) -> None:
+        super().__init__(spaman, config_entry, button)
+        self._button: GeckoLibButton = button
+
+    async def async_press(self) -> None:
+        """Press the button asynchronously."""
+        await self._button.async_press()
 
 
 class GeckoReconnectButton(GeckoButton):
