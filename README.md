@@ -16,6 +16,8 @@
 
 # Version History
 
+## v0.1.22
+
 ## v0.1.21
  - Prevent various entities (such as reminder dates) from being included in scenes as this would make
    reminders a bit pointless. This was belt and braces really since the date platform doesn't support
