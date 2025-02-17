@@ -16,6 +16,8 @@
 
 # Version History
 
+## v0.1.20
+
 ## v0.1.19
  - Update bug template to link to gecko-home-assistant issues rather than the blueprint
  - Rework pumps to use new clean library versions, now supports one, two and variable speed pumps

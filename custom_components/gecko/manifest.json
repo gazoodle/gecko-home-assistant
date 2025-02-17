@@ -10,7 +10,7 @@
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/gazoodle/gecko-home-assistant/issues",
   "requirements": [
-    "geckolib==1.0.2"
+    "geckolib==1.0.3"
   ],
-  "version": "0.1.19"
+  "version": "0.1.20"
 }
