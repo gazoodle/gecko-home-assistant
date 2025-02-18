@@ -16,6 +16,9 @@
 
 # Version History
 
+## v0.1.23
+ - Bump geckolib to fix DIV/0
+
 ## v0.1.22
  - Made platform load/unload more tolerant of runtime faults
  - Support basic inMix RGB zones. Need feedback on this. No lighting modes or synchro support yet.
