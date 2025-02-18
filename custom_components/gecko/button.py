@@ -10,7 +10,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import BUTTON, DOMAIN
 from .const import VERSION as INTEGRATION_VERSION
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
@@ -35,6 +35,7 @@ async def async_setup_entry(
     if spaman.reconnect_button is not None:
         buttons.append(GeckoReconnectButton(entry, spaman))
     async_add_entities(buttons)
+    spaman.platform_loaded(BUTTON)
 
 
 class GeckoButton(GeckoEntity, ButtonEntity):

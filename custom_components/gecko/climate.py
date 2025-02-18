@@ -13,7 +13,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import CLIMATE, DOMAIN
 from .entity import GeckoEntity
 from .spa_manager import GeckoSpaManager
 
@@ -37,6 +37,7 @@ async def async_setup_entry(
                 )
             ]
         )
+    spaman.platform_loaded(CLIMATE)
 
 
 class GeckoClimate(GeckoEntity, ClimateEntity):

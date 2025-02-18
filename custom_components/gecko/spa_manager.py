@@ -84,7 +84,7 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     async def unload_platforms(self) -> bool:
         """Unload the platforms that were previously loaded."""
-        if len(self.platforms) > 0:
+        if self.platforms:
             _LOGGER.debug("Unload platforms %s", self.platforms)
 
             unloaded: bool = await self.hass.config_entries.async_unload_platforms(
@@ -96,15 +96,17 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     async def load_platforms(self) -> None:
         """Load the appropriate platforms."""
+        platforms = [SENSOR, BUTTON]
         if self._can_use_facade:
-            self.platforms = PLATFORMS
-        else:
-            self.platforms = [SENSOR, BUTTON]
+            platforms = PLATFORMS
+        self.platforms = platforms
 
-        _LOGGER.debug("Load platforms %s", self.platforms)
-        await self.hass.config_entries.async_forward_entry_setups(
-            self.entry, self.platforms
-        )
+        _LOGGER.debug("Load platforms %s", platforms)
+        await self.hass.config_entries.async_forward_entry_setups(self.entry, platforms)
+
+    def platform_loaded(self, platform: str) -> None:
+        """Call when a platform has loaded."""
+        self.platforms.append(platform)
 
     async def reload(self) -> None:
         """Reload the platforms."""

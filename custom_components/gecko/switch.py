@@ -8,7 +8,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, SWITCH
 from .entity import GeckoEntity
 
 if TYPE_CHECKING:
@@ -35,6 +35,7 @@ async def async_setup_entry(
                 )
             )
         async_add_entities(entities)
+    spaman.platform_loaded(SWITCH)
 
 
 class GeckoBinarySwitch(GeckoEntity, SwitchEntity):

@@ -17,6 +17,8 @@
 # Version History
 
 ## v0.1.22
+ - Made platform load/unload more tolerant of runtime faults
+ - Support basic inMix RGB zones. Need feedback on this. No lighting modes or synchro support yet.
 
 ## v0.1.21
  - Prevent various entities (such as reminder dates) from being included in scenes as this would make

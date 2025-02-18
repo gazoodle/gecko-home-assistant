@@ -12,7 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, WATER_HEATER
 from .entity import GeckoEntity
 from .spa_manager import GeckoSpaManager
 
@@ -36,6 +36,7 @@ async def async_setup_entry(
                 )
             ]
         )
+    spaman.platform_loaded(WATER_HEATER)
 
 
 class GeckoHAWaterHeater(GeckoEntity, WaterHeaterEntity):

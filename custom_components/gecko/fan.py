@@ -8,7 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, FAN
 from .entity import GeckoEntity
 
 if TYPE_CHECKING:
@@ -27,6 +27,7 @@ async def async_setup_entry(
                 for pump in list(spaman.facade.pumps + spaman.facade.blowers)
             ]
         )
+    spaman.platform_loaded(FAN)
 
 
 class GeckoFan(GeckoEntity, FanEntity):

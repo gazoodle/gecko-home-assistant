@@ -9,7 +9,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, SELECT
 from .entity import GeckoEntity
 from .spa_manager import GeckoSpaManager
 
@@ -34,8 +34,11 @@ async def async_setup_entry(
             selects.append(
                 GeckoKeypadBacklight(spaman, entry, spaman.facade.keypad.backlight)
             )
+        if spaman.facade.inmix.is_available and spaman.facade.inmix.syncro.is_available:
+            selects.append(GeckoInMixSync(spaman, entry))
         selects.append(GeckoWatercare(spaman, entry))
         async_add_entities(selects)
+    spaman.platform_loaded(SELECT)
 
 
 class GeckoSelect(GeckoEntity, SelectEntity):
@@ -122,3 +125,21 @@ class GeckoWatercare(GeckoSelect):
     def icon(self) -> str:
         """Get the icon for watercare."""
         return "mdi:water-check"
+
+
+class GeckoInMixSync(GeckoSelect):
+    """inMix sync class."""
+
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        entry: ConfigEntry,
+    ) -> None:
+        """Initialize the watercare select."""
+        super().__init__(spaman, entry, spaman.facade.inmix.syncro)
+        self._entity_category = None
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for the sync class."""
+        return "mdi:alarm-panel-outline"

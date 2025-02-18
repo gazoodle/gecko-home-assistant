@@ -8,7 +8,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import BINARY_SENSOR, DOMAIN
 from .entity import GeckoEntity
 
 if TYPE_CHECKING:
@@ -33,6 +33,7 @@ async def async_setup_entry(
         async_add_entities(
             [GeckoBinarySensor(spaman, entry, spaman.facade.spa_in_use_sensor)]
         )
+    spaman.platform_loaded(BINARY_SENSOR)
 
 
 class GeckoBinarySensor(GeckoEntity, BinarySensorEntity):

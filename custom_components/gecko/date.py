@@ -11,7 +11,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DATE, DOMAIN
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
 
@@ -30,6 +30,7 @@ async def async_setup_entry(
             for reminder in spaman.facade.reminders_manager.reminders
         )
     async_add_entities(dates)
+    spaman.platform_loaded(DATE)
 
 
 class GeckoDate(GeckoEntity, DateEntity):

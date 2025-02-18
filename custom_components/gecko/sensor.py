@@ -11,7 +11,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
+from .const import DOMAIN, SENSOR
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
 
@@ -68,6 +68,7 @@ async def async_setup_entry(
         )
         sensors.append(GeckoErrorTextSensor(spaman, entry, spaman.facade.error_sensor))
     async_add_entities(sensors)
+    spaman.platform_loaded(SENSOR)
 
 
 class GeckoSensor(GeckoEntity, SensorEntity):
