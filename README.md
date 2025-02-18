@@ -16,6 +16,8 @@
 
 # Version History
 
+## v0.1.24
+
 ## v0.1.23
  - Bump geckolib to fix DIV/0
 
