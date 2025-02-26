@@ -1,11 +1,6 @@
 # https://www.home-assistant.io/integrations/default_config/
-# For gecko development, we only need a small subset
-config:
-history:
-logbook:
-stream:
-notify:
-homeassistant_alerts:
+# Example configuration.yaml entry
+default_config:
 
 # https://www.home-assistant.io/integrations/homeassistant/
 homeassistant:

@@ -17,6 +17,8 @@
 # Version History
 
 ## v0.1.24
+ - Bump geckolib to 1.0.6 to handle bubble generator issues
+ - Fix platorm loading bug that caused errors in log file during start-up
 
 ## v0.1.23
  - Bump geckolib to fix DIV/0
