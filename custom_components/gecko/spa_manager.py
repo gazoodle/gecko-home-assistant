@@ -106,7 +106,8 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
 
     def platform_loaded(self, platform: str) -> None:
         """Call when a platform has loaded."""
-        self.platforms.append(platform)
+        if platform not in self.platforms:
+            self.platforms.append(platform)
 
     async def reload(self) -> None:
         """Reload the platforms."""
