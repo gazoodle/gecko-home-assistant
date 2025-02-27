@@ -18,6 +18,7 @@
 
 ## v0.1.25
  - Bump geckolib to 1.0.7
+ - Get some sensors from Mr.Steam units hopefully
 
 ## v0.1.24
  - Bump geckolib to 1.0.6 to handle bubble generator issues
