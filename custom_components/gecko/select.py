@@ -36,7 +36,8 @@ async def async_setup_entry(
             )
         if spaman.facade.inmix.is_available and spaman.facade.inmix.syncro.is_available:
             selects.append(GeckoInMixSync(spaman, entry))
-        selects.append(GeckoWatercare(spaman, entry))
+        if spaman.facade.water_care.is_available:
+            selects.append(GeckoWatercare(spaman, entry))
         async_add_entities(selects)
     spaman.platform_loaded(SELECT)
 

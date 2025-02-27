@@ -58,7 +58,8 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         )
         super().__init__(spaman, config_entry, automation_entity)
         self._water_care = water_care
-        self._water_care.watch(self._on_change)
+        if self._water_care.is_available:
+            self._water_care.watch(self._on_change)
 
     @property
     def icon(self) -> str:

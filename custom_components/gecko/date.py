@@ -24,7 +24,11 @@ async def async_setup_entry(
     """Set up date platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     dates: list = []
-    if spaman.can_use_facade and spaman.facade is not None:
+    if (
+        spaman.can_use_facade
+        and spaman.facade is not None
+        and spaman.facade.reminders_manager.is_available
+    ):
         dates.extend(
             GeckoReminderDate(spaman, entry, reminder.reminder_type)
             for reminder in spaman.facade.reminders_manager.reminders
