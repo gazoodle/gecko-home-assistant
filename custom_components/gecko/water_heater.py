@@ -3,7 +3,7 @@
 import logging
 from typing import Any
 
-from geckolib import GeckoAsyncFacade, GeckoWaterCare, GeckoWaterHeater
+from geckolib import GeckoAsyncFacade, GeckoWaterHeaterAbstract
 from homeassistant.components.water_heater import (
     WaterHeaterEntity,
     WaterHeaterEntityFeature,
@@ -24,18 +24,23 @@ async def async_setup_entry(
 ) -> None:
     """Set up climate platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    if spaman.facade is not None and spaman.facade.water_heater.is_available:
+    if spaman.facade is not None:
         facade: GeckoAsyncFacade = spaman.facade
-        async_add_entities(
-            [
+        water_heaters = []
+
+        if spaman.facade.water_heater.is_available:
+            water_heaters.append(
                 GeckoHAWaterHeater(
                     spaman,
                     entry,
                     facade.water_heater,
-                    facade.water_care,
                 )
-            ]
-        )
+            )
+        if spaman.facade.mrsteam.is_available:
+            water_heaters.append(GeckoHAWaterHeater(spaman, entry, facade.mrsteam))
+
+        async_add_entities(water_heaters)
+
     spaman.platform_loaded(WATER_HEATER)
 
 
@@ -46,40 +51,23 @@ class GeckoHAWaterHeater(GeckoEntity, WaterHeaterEntity):
         self,
         spaman: GeckoSpaManager,
         config_entry: ConfigEntry,
-        automation_entity: GeckoWaterHeater,
-        water_care: GeckoWaterCare,
+        automation_entity: GeckoWaterHeaterAbstract,
     ) -> None:
         """Initialize Gecko climate entity."""
         self._attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE
         super().__init__(spaman, config_entry, automation_entity)
-        self._water_care = water_care
-        self._water_care.watch(self._on_change)
 
     @property
     def icon(self) -> str:
         """Return the icon of the sensor."""
+        if self.spaman.facade.mrsteam.is_available:
+            return "mdi:steam"
         return "mdi:hot-tub"
 
     @property
     def current_operation(self) -> str:
         """The current operation."""
         return self._automation_entity.current_operation
-
-    @property
-    def preset_modes(self) -> list[str] | None:
-        """List the water care modes."""
-        return self._water_care.modes
-
-    @property
-    def preset_mode(self) -> str | None:
-        """Get the current preset mode."""
-        if self._water_care.mode is None:
-            return "Waiting..."
-        return self._water_care.modes[self._water_care.mode]
-
-    async def async_set_preset_mode(self, preset_mode: str) -> None:
-        """Set the preset mode asynchronously."""
-        await self._water_care.async_set_mode(preset_mode)
 
     @property
     def temperature_unit(self) -> str:

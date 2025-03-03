@@ -68,6 +68,10 @@ async def async_setup_entry(
                 for reminder in spaman.facade.reminders_manager.reminders
             )
         sensors.append(GeckoErrorTextSensor(spaman, entry, spaman.facade.error_sensor))
+        if spaman.facade.mrsteam.is_available:
+            sensors.append(
+                GeckoSensor(spaman, entry, spaman.facade.mrsteam.remaining_runtime)
+            )
     async_add_entities(sensors)
     spaman.platform_loaded(SENSOR)
 

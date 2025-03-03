@@ -33,6 +33,7 @@ LIGHT = "light"
 SELECT = "select"
 WATER_HEATER = "water_heater"
 DATE = "date"
+NUMBER = "number"
 PLATFORMS = [
     BINARY_SENSOR,
     BUTTON,
@@ -44,6 +45,7 @@ PLATFORMS = [
     SELECT,
     WATER_HEATER,
     DATE,
+    NUMBER,
 ]
 
 # Option keys

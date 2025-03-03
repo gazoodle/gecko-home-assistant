@@ -34,6 +34,13 @@ async def async_setup_entry(
                     spaman, entry, spaman.facade.standby, EntityCategory.CONFIG
                 )
             )
+        if spaman.facade.mrsteam.is_available:
+            entities.extend(
+                [
+                    GeckoBinarySwitch(spaman, entry, switch, None)
+                    for switch in spaman.facade.mrsteam.switches
+                ]
+            )
         async_add_entities(entities)
     spaman.platform_loaded(SWITCH)
 

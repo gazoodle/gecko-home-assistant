@@ -18,6 +18,7 @@
 
 ## v0.1.26
  - Bump geckolib to 1.0.8
+ - Mr.Steam basic support
 
 ## v0.1.25
  - Bump geckolib to 1.0.7
