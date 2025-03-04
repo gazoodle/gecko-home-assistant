@@ -16,6 +16,9 @@
 
 # Version History
 
+## v0.1.27
+ - Bump geckolib to 1.0.9
+
 ## v0.1.26
  - Bump geckolib to 1.0.8
  - Mr.Steam basic support
