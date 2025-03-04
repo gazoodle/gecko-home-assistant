@@ -18,6 +18,9 @@
 
 ## v0.1.27
  - Bump geckolib to 1.0.9
+ - Fixed broken EcoMode swithc that 1.0.8 introduced ([#160](https://github.com/gazoodle/gecko-home-assistant/issues/160))
+ - Added pump and blower sensors to show P<n> & BL device states because buttons use UdP<n> exclusively ([#159](https://github.com/gazoodle/gecko-home-assistant/issues/159))
+ - Restore old min temperature, but use the max config data for min & max if available ([#149](https://github.com/gazoodle/gecko-home-assistant/issues/149))
 
 ## v0.1.26
  - Bump geckolib to 1.0.8
