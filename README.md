@@ -16,6 +16,9 @@
 
 # Version History
 
+## v0.1.29
+ - Bump geckolib to 1.0.11
+
 ## v0.1.28
  - Bump geckolib to 1.0.10
  - Handle TempNotValid error by making climate, water heater and current temperature sensors unavailable
