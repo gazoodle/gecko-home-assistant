@@ -99,3 +99,7 @@ class GeckoHAWaterHeater(GeckoEntity, WaterHeaterEntity):
         await self._automation_entity.async_set_target_temperature(
             kwargs["temperature"]
         )
+
+    def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
+        self._attr_available = self._automation_entity.is_available
+        return super()._on_change(_sender, _old_value, _new_value)

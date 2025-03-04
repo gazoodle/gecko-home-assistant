@@ -16,6 +16,11 @@
 
 # Version History
 
+## v0.1.28
+ - Bump geckolib to 1.0.10
+ - Handle TempNotValid error by making climate, water heater and current temperature sensors unavailable
+ - Fix Error sensor that wasn't updating if the library error sensor changed state
+
 ## v0.1.27
  - Bump geckolib to 1.0.9
  - Fixed broken EcoMode swithc that 1.0.8 introduced ([#160](https://github.com/gazoodle/gecko-home-assistant/issues/160))

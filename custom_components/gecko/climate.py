@@ -122,3 +122,7 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         """Fake function to set HVAC mode."""
+
+    def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
+        self._attr_available = self._automation_entity.is_available
+        return super()._on_change(_sender, _old_value, _new_value)

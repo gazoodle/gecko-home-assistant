@@ -4,7 +4,7 @@ import logging
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from geckolib import GeckoErrorSensor, GeckoReminderType
+from geckolib import GeckoAutomationBase, GeckoErrorSensor, GeckoReminderType
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
@@ -43,8 +43,11 @@ async def async_setup_entry(
     if spaman.can_use_facade and spaman.facade is not None:
         if spaman.facade.water_heater.is_available:
             sensors.append(
-                GeckoSensor(
-                    spaman, entry, spaman.facade.water_heater.current_temperature_sensor
+                GeckoCurrentTemperatureSensor(
+                    spaman,
+                    entry,
+                    spaman.facade.water_heater.current_temperature_sensor,
+                    spaman.facade.water_heater,
                 )
             )
             sensors.append(
@@ -186,6 +189,7 @@ class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
             spaman.spa_name,
         )
         self._error_sensor = error_sensor
+        self._error_sensor.watch(self._on_change)
         self._entity_category = EntityCategory.DIAGNOSTIC
 
     @property
@@ -204,3 +208,29 @@ class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
     def icon(self) -> str:
         """Get icon."""
         return "mdi:alert"
+
+    def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
+        """Notify HA of the change."""
+        if self.hass is not None:
+            self.async_schedule_update_ha_state(force_refresh=True)
+
+
+class GeckoCurrentTemperatureSensor(GeckoSensor):
+    """Current temperature sensor."""
+
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        config_entry: ConfigEntry,
+        automation_entity: GeckoAutomationBase,
+        valid_entity: GeckoAutomationBase,
+        entity_category: EntityCategory | None = None,
+    ) -> None:
+        """Initialize the current temp sensor."""
+        super().__init__(spaman, config_entry, automation_entity, entity_category)
+        self.valid_entity = valid_entity
+        self.valid_entity.watch(self._on_change)
+
+    def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
+        self._attr_available = self.valid_entity.is_available
+        return super()._on_change(_sender, _old_value, _new_value)
