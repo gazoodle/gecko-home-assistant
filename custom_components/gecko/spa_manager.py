@@ -50,6 +50,11 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
         )
         return self
 
+    async def __aexit__(self, *exc_info: object) -> None:
+        """Support async with."""
+        self.cancel_key_tasks("HASPAMAN")
+        return await super().__aexit__(*exc_info)
+
     @property
     def can_use_facade(self) -> bool:
         """Determine if the facade is ready for use."""
