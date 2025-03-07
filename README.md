@@ -18,6 +18,7 @@
 
 ## v0.1.30
  - Bump geckolib to 1.0.13
+ - Add inMix synchro support
 
 ## v0.1.29
  - Bump geckolib to 1.0.11
