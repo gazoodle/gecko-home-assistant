@@ -18,6 +18,8 @@
 
 ## v0.1.29
  - Bump geckolib to 1.0.11
+ - Fix tardy updates to spa controls
+ - inMix driver updates the whole inMix structure in one go - hopefully this will control the zones correctly.
 
 ## v0.1.28
  - Bump geckolib to 1.0.10
