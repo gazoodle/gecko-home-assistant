@@ -17,6 +17,8 @@
 # Version History
 
 ## v0.1.31
+ - Bump geckolib to 1.0.14
+ - Add Bain Ultra support, including chroma if present
 
 ## v0.1.30
  - Bump geckolib to 1.0.13

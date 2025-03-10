@@ -1,6 +1,7 @@
 """Switch platform for Gecko."""  # noqa: A005
 
 import logging
+from multiprocessing.spawn import spawn_main
 
 from geckolib import GeckoAutomationFacadeBase
 from homeassistant.components.select import SelectEntity
@@ -38,6 +39,21 @@ async def async_setup_entry(
             selects.append(GeckoInMixSync(spaman, entry))
         if spaman.facade.water_care.is_available:
             selects.append(GeckoWatercare(spaman, entry))
+        if spaman.facade.bainultra.is_available:
+            selects.extend(
+                [
+                    GeckoBainBackrest(spaman, entry, select)
+                    for select in spaman.facade.bainultra.selects
+                ]
+            )
+            if spaman.facade.bainultra.chroma.is_available:
+                selects.append(
+                    GeckoBainChroma(spaman, entry, spaman.facade.bainultra.chroma)
+                )
+            selects.append(
+                GeckoSelect(spaman, entry, spaman.facade.bainultra.drying_cycle)
+            )
+
         async_add_entities(selects)
     spaman.platform_loaded(SELECT)
 
@@ -89,6 +105,44 @@ class GeckoInGrid(GeckoSelect):
         return "mdi:heat-wave"
 
 
+class GeckoBainBackrest(GeckoSelect):
+    """Bain backrest class."""
+
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        entry: ConfigEntry,
+        select: GeckoAutomationFacadeBase,
+    ) -> None:
+        """Initialize the backrest select."""
+        super().__init__(spaman, entry, select)
+        self._entity_category = None
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for the backrest."""
+        return "mdi:heat-wave"
+
+
+class GeckoBainChroma(GeckoSelect):
+    """Bain chroma class."""
+
+    def __init__(
+        self,
+        spaman: GeckoSpaManager,
+        entry: ConfigEntry,
+        select: GeckoAutomationFacadeBase,
+    ) -> None:
+        """Initialize the chroma select."""
+        super().__init__(spaman, entry, select)
+        self._entity_category = None
+
+    @property
+    def icon(self) -> str:
+        """Get the icon for the chroma."""
+        return "mdi:looks"
+
+
 class GeckoLockMode(GeckoSelect):
     """Lockmode class."""
 
@@ -136,7 +190,7 @@ class GeckoInMixSync(GeckoSelect):
         spaman: GeckoSpaManager,
         entry: ConfigEntry,
     ) -> None:
-        """Initialize the watercare select."""
+        """Initialize the inmix select."""
         super().__init__(spaman, entry, spaman.facade.inmix.syncro)
         self._entity_category = None
 

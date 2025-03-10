@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -23,14 +24,43 @@ async def async_setup_entry(
     """Set up number platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
     numbers: list = []
-    if (
-        spaman.can_use_facade
-        and spaman.facade is not None
-        and spaman.facade.mrsteam.is_available
-    ):
-        numbers.append(
-            GeckoNumber(spaman, entry, spaman.facade.mrsteam.user_runtime, None)
-        )
+    if spaman.can_use_facade and spaman.facade is not None:
+        if spaman.facade.mrsteam.is_available:
+            numbers.append(
+                GeckoNumber(spaman, entry, spaman.facade.mrsteam.user_runtime, None)
+            )
+        if spaman.facade.bainultra.is_available:
+            numbers.append(
+                GeckoNumber(spaman, entry, spaman.facade.bainultra.bath_runtime, None)
+            )
+            numbers.append(
+                GeckoNumber(spaman, entry, spaman.facade.bainultra.bath_intensity, None)
+            )
+            numbers.append(
+                GeckoNumber(
+                    spaman,
+                    entry,
+                    spaman.facade.bainultra.drying_cycle_delay,
+                    EntityCategory.CONFIG,
+                )
+            )
+            numbers.append(
+                GeckoNumber(
+                    spaman,
+                    entry,
+                    spaman.facade.bainultra.drying_cycle_hour,
+                    EntityCategory.CONFIG,
+                )
+            )
+            numbers.append(
+                GeckoNumber(
+                    spaman,
+                    entry,
+                    spaman.facade.bainultra.drying_cycle_minute,
+                    EntityCategory.CONFIG,
+                )
+            )
+
     async_add_entities(numbers)
     spaman.platform_loaded(NUMBER)
 
@@ -61,6 +91,16 @@ class GeckoNumber(GeckoEntity, NumberEntity):
     def native_unit_of_measurement(self) -> str:
         """Return the unit of measurement."""
         return self._automation_entity.native_unit_of_measurement
+
+    @property
+    def native_step(self) -> float:
+        """Retuurn the step size."""
+        return self._automation_entity.native_step
+
+    @property
+    def mode(self) -> str:
+        """Return the preferred entry mode."""
+        return self._automation_entity.mode
 
     @property
     def device_class(self) -> str:
