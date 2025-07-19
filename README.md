@@ -16,6 +16,9 @@
 
 # Version History
 
+## v0.1.33
+ - Bump geckolib to 1.0.16
+
 ## v0.1.32
  - Bump geckolib to 1.0.15
 
