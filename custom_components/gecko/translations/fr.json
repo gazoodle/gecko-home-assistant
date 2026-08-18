@@ -3,9 +3,9 @@
     "step": {
       "user": {
         "title": "Configuration Gecko",
-        "description": "Svp fournir l'adresse IP de votre spa, ou laisser en blanc pour rechercher un spa présent sur le réseau.",
+        "description": "Svp fournir l'adresse de votre spa, ou laisser en blanc pour rechercher un spa présent sur le réseau.",
         "data": {
-          "ipaddress": "Adresse IP"
+          "ipaddress": "Adresse"
         }
       },
       "pick": {
