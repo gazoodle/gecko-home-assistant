@@ -70,13 +70,6 @@ class GeckoFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def _async_step_with_address(self, user_addr: str) -> ConfigFlowResult:
-        # Check that this is an IP address, or at least can be interpreted as one
-        try:
-            socket.inet_aton(user_addr)
-        except OSError:
-            self._errors["base"] = "not_ip"
-            return self.async_show_user_form()
-
         # And that there is a spa there to connect to ...
         await self._spaman.async_set_spa_info(user_addr, None, None)
         await self._spaman.wait_for_descriptors()

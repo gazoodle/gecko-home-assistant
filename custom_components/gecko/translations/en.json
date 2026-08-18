@@ -3,9 +3,9 @@
     "step": {
       "user": {
         "title": "Gecko Setup",
-        "description": "Please provide the IP address of your SPA, or leave it blank to scan your network for available ones.",
+        "description": "Please provide the address of your SPA, or leave it blank to scan your network for available ones.",
         "data": {
-          "ipaddress": "IP Address"
+          "ipaddress": "Address"
         }
       },
       "pick": {
