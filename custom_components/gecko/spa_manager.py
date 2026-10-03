@@ -68,7 +68,12 @@ class GeckoSpaManager(GeckoAsyncSpaMan):
             try:
                 if event == GeckoSpaEvent.CLIENT_FACADE_IS_READY:
                     # Wait for a single update so we have reminders and watercare
-                    await self.facade.wait_for_one_update()
+                    try:
+                        await self.facade.wait_for_one_update()
+                    except Exception:  # noqa: BLE001
+                        _LOGGER.warning(
+                            "Failed to wait for one update during ready event"
+                        )
                     self._can_use_facade = True
                     await self.reload()
 

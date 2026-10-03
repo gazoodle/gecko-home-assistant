@@ -11,7 +11,7 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, SENSOR
+from .const import DOMAIN, ERROR_COUNT_TOLERANCE, SENSOR
 from .entity import GeckoEntity, GeckoEntityBase
 from .spa_manager import GeckoSpaManager
 
@@ -47,7 +47,7 @@ async def async_setup_entry(
             GeckoSensor(spaman, entry, spaman.channel_sensor, EntityCategory.DIAGNOSTIC)
         )
     if spaman.can_use_facade and spaman.facade is not None:
-        if spaman.facade.water_heater.is_available:
+        if spaman.facade.water_heater.current_temperature_sensor is not None:
             sensors.append(
                 GeckoCurrentTemperatureSensor(
                     spaman,
@@ -56,11 +56,13 @@ async def async_setup_entry(
                     spaman.facade.water_heater,
                 )
             )
+        if spaman.facade.water_heater.target_temperature_sensor is not None:
             sensors.append(
                 GeckoSensor(
                     spaman, entry, spaman.facade.water_heater.target_temperature_sensor
                 )
             )
+        if spaman.facade.water_heater.real_target_temperature_sensor is not None:
             sensors.append(
                 GeckoSensor(
                     spaman,
@@ -235,8 +237,15 @@ class GeckoCurrentTemperatureSensor(GeckoSensor):
         """Initialize the current temp sensor."""
         super().__init__(spaman, config_entry, automation_entity, entity_category)
         self.valid_entity = valid_entity
+        self._error_count = 0
         self.valid_entity.watch(self._on_change)
 
     def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
-        self._attr_available = self.valid_entity.is_available
+        if self.valid_entity.is_available:
+            self._attr_available = True
+            self._error_count = 0
+        else:
+            self._error_count += 1
+            if self._error_count > ERROR_COUNT_TOLERANCE:
+                self._attr_available = False
         return super()._on_change(_sender, _old_value, _new_value)
