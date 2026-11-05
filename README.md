@@ -13,6 +13,34 @@
 ![Validate](https://github.com/gazoodle/gecko-home-assistant/actions/workflows/validate.yml/badge.svg)
 ![Lint](https://github.com/gazoodle/gecko-home-assistant/actions/workflows/lint.yml/badge.svg)
 
+# Addressing Gecko email "Your in.touch 2 app is being retired"
+
+In November 2026, Gecko Alliance sent an email around to all their in.touch2 customers
+stating that their app would cease functioning on January 1st 2028.
+
+This is obviously a concerning development from Gecko Alliance, but rest assured this
+integration will continue to function long after the manufacturers have retired their own
+app and its cloud service.
+
+This support library [`geckolib`](https://github.com/gazoodle/geckolib) was built using the data contained in their SpaPackStruct.xml. 
+This file describes the memory layout of the spa pack firmware. Because we have already got those
+layouts any Spa that is currently working will remain working.
+
+The risks for you are: If you get a newer firmware from Gecko, and their layout significantly
+changes and is later than we have access to the SpaPackStruct then this could potentially
+mean your spa cannot be controlled by this library any longer.
+
+Sadly, this is already true for the latest hardware packs that use the in.touch3 system
+because that offloads the pack shape to a cloud service that is opaque and inaccessible to
+us.
+
+I will continue to attempt to get access to the pack data from them hoping to continue
+support for older devices but historically this has not been very successful. The latest
+version that I have had is 40.0.0.0.
+
+This integration & support library does not use, and has never used, their cloud service to 
+provide the ability to control your spa. This functionality is local only.
+
 
 # Version History
 
