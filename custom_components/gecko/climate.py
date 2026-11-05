@@ -13,7 +13,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import CLIMATE, DOMAIN
+from .const import CLIMATE, DOMAIN, ERROR_COUNT_TOLERANCE
 from .entity import GeckoEntity
 from .spa_manager import GeckoSpaManager
 
@@ -25,7 +25,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up climate platform."""
     spaman: GeckoSpaManager = hass.data[DOMAIN][entry.entry_id]
-    if spaman.facade is not None and spaman.facade.water_heater.is_available:
+    if spaman.facade is not None:
         facade: GeckoAsyncFacade = spaman.facade
         async_add_entities(
             [
@@ -58,6 +58,7 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         )
         super().__init__(spaman, config_entry, automation_entity)
         self._water_care = water_care
+        self._error_count = 0
         if self._water_care.is_available:
             self._water_care.watch(self._on_change)
 
@@ -124,5 +125,11 @@ class GeckoClimate(GeckoEntity, ClimateEntity):
         """Fake function to set HVAC mode."""
 
     def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
-        self._attr_available = self._automation_entity.is_available
+        if self._automation_entity.is_available:
+            self._attr_available = True
+            self._error_count = 0
+        else:
+            self._error_count += 1
+            if self._error_count > ERROR_COUNT_TOLERANCE:
+                self._attr_available = False
         return super()._on_change(_sender, _old_value, _new_value)

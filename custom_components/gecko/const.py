@@ -71,3 +71,6 @@ If you have any issues with this you need to open an issue here:
 {ISSUE_URL}
 -------------------------------------------------------------------
 """
+
+# Error handling
+ERROR_COUNT_TOLERANCE = 5
