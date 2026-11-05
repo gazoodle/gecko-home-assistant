@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from .const import DOMAIN, SENSOR
 from .entity import GeckoEntity, GeckoEntityBase
@@ -134,7 +135,7 @@ class GeckoReminderSensor(GeckoEntityBase, SensorEntity):
         )
         if reminder is None:
             return None
-        today = datetime.now(tz=UTC).date()
+        today = dt_util.now().date()
         midnight = datetime(today.year, today.month, today.day, 0, 0, 0, 0, UTC)
         return midnight + timedelta(reminder.days)
 

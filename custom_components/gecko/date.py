@@ -10,6 +10,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
 from .const import DATE, DOMAIN
 from .entity import GeckoEntity, GeckoEntityBase
@@ -87,7 +88,7 @@ class GeckoReminderDate(GeckoEntityBase, DateEntity):
         )
         if reminder is None:
             return None
-        today = datetime.now(tz=UTC).date()
+        today = dt_util.now().date()
         midnight = datetime(today.year, today.month, today.day, 0, 0, 0, 0, UTC)
         return midnight + timedelta(reminder.days)
 
@@ -95,7 +96,7 @@ class GeckoReminderDate(GeckoEntityBase, DateEntity):
         """Update the current value."""
         if self.spaman.facade is None:
             return
-        today = datetime.now(tz=UTC).date()
+        today = dt_util.now().date()
         delta = value - today
         _LOGGER.debug("Set reminder delta to %d", delta.days)
         await self.spaman.facade.reminders_manager.set_reminder(
