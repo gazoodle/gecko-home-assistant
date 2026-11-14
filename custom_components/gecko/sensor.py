@@ -5,7 +5,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from geckolib import GeckoAutomationBase, GeckoErrorSensor, GeckoReminderType
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
@@ -223,6 +223,8 @@ class GeckoErrorTextSensor(GeckoEntityBase, SensorEntity):
 
 class GeckoCurrentTemperatureSensor(GeckoSensor):
     """Current temperature sensor."""
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
 
     def __init__(
         self,
